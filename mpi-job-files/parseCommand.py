@@ -17,7 +17,7 @@ while i < len(sys.argv):
     #print("Found the number of replicas option and argument.")
     manifest = manifest.replace("#<numberOfReplicas>", f"{sys.argv[i+1]}")
     manifest = manifest.replace("#<mpirunOption>", \
-      f"- -n\n{12*' '}- '{sys.argv[i+1]}'\n{12*' '}#<mpirunOption>)")
+      f"- -n\n{12*' '}- '{sys.argv[i+1]}'\n{12*' '}#<mpirunOption>")
     i += 2
 
   elif (i + 1 < len(sys.argv) and re.match("^--bind-to$", sys.argv[i]) \
@@ -53,6 +53,7 @@ while i < len(sys.argv):
     i += 2
 
   else:
+    print(f"Unrecognized option or argument: {sys.argv[i]}")
     i += 1
 
 print(manifest)
