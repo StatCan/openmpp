@@ -1,0 +1,43 @@
+{{/*
+Oms web-service using template for exec.Command(exeName, Args...):
+  - skip empty lines
+  - substitute template arguments
+  - first non-empty line is a name of executable to run
+  - each other line is a command line argument for executable
+
+Arguments of template:
+  ModelName string            // model name
+  ExeStem   string            // base part of model exe name, usually modelName
+  Dir       string            // work directory to run the model
+  BinDir    string            // bin directory where model exe is located
+  DbPath    string            // absolute path to sqlite database file: models/bin/model.sqlite
+  MpiNp     int               // number of MPI processes
+  HostFile  string            // if not empty then path to hostfile
+  Args      []string          // model command line arguments
+  Env       map[string]string // environment variables to run the model
+
+Example output:
+
+python3 parseCommand.py -n 4 --bind-to none -wdir /home/jacek/openM++/openmpp_debian_mpi_20230803/models/bin ./RiskPaths_mpi -OpenM.RunStamp 2023_09_27_12_32_11_023 -OpenM.LogToConsole true -OpenM.LogToFile false -OpenM.MessageLanguage en-US -OpenM.RunName RiskPaths_Default_2023_09_27_12_27_50_175 -OpenM.SetName Default -OpenM.SubValues 3 -OpenM.LogRank true -OpenM.Threads 4 | kubectl apply -f -
+*/}}
+
+./bin/dispatchMPIJob.sh
+-modelName
+{{.ModelName}}
+-n
+{{ .MpiNp}}
+--bind-to
+none
+{{with .Dir}}
+-wdir
+{{.}}
+{{end}}
+{{range $key, $val := .Env}}
+-x
+{{$key}}={{$val}}
+{{end}}
+{{.BinDir}}/{{.ExeStem}}_mpi
+{{range .Args}}
+{{.}}
+{{end}} 
+

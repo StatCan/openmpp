@@ -1,0 +1,74 @@
+apiVersion: kubeflow.org/v1
+kind: MPIJob
+metadata:
+  name: riskpaths
+  namespace: aaw-team
+spec:
+  #slotsPerWorker: Tensorflow example sets this attribute, but Pat's example template doesn't.
+  runPolicy:
+    cleanPodPolicy: Running
+  mpiReplicaSpecs:
+    Launcher:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            data.statcn.gc.ca/inject-blob-volumes: 'true' # Access blob storage.
+            sidecar.istio.io/inject: "false" # Init container conflicts with istio.
+        spec:
+          containers:
+          - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:d1174244baa102b26f0850c3883e7b15c50a3b64
+            # There must be a better way than just hardcoding these image names in here, right?
+            name: riskpaths-launcher
+            command:
+            - mpirun
+            - -n
+            - '7'
+            - --bind-to
+            - none
+            - -wdir
+            - /home/jovyan/models/bin
+            #<mpirunOption>)
+            #<modelExecutable>
+            - -OpenM.RunStamp
+            - '2023_10_16_17_14_17_436'
+            - -OpenM.LogToConsole
+            - 'true'
+            - -OpenM.LogToFile
+            - 'false'
+            - -OpenM.SetName
+            - 'Default'
+            - -OpenM.LogRank
+            - 'true'
+            - -OpenM.MessageLanguage
+            - 'en-US'
+            - -OpenM.RunName
+            - 'RiskPaths_Default_2023_10_16_13_12_54_034'
+            #<OpenMOption>
+            resources:
+              limits:
+                cpu: '2'
+                memory: 2Gi
+              requests:
+                cpu: 250m
+                memory: 250Mi
+
+    Worker:
+      replicas: 7
+      template:
+        spec:
+          containers:
+          - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:d1174244baa102b26f0850c3883e7b15c50a3b64
+            # Same as above, I don't think this should be hardcoded in like this.
+            name: riskpaths-worker
+            resources:
+                limits:
+                  cpu: '2'
+                  memory: 2Gi
+                requests:
+                  cpu: '2'
+                  memory: 1Gi
+
+            # In the tensorflow example there are volume and volume mount definitions for the worker pods.
+            # I don't think this is necessary if the container images used in the worker pod definitions
+            # have COPY directives that populate the ephemeral filesystem with the required files.
