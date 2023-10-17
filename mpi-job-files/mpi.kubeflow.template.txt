@@ -36,7 +36,7 @@ none
 -x
 {{$key}}={{$val}}
 {{end}}
-{{.BinDir}}/{{.ExeStem}}_mpi
+{{.ExeStem}}_mpi
 {{range .Args}}
 {{.}}
 {{end}} 

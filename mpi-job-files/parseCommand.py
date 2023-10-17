@@ -2,10 +2,16 @@ import sys
 import re
 import os
 
-# Working directory is assumed to be: /opt/openmpp/<openmpp-root-dir>/
+# Working directory is assumed to be: 
+# /opt/openmpp/<openmpp-root-dir>/
+
+# Directory where model executables are stored:
+modelsDir = os.path.join(Path.home(), "models/bin")
 
 with open("./etc/MPIJobTemplate.yaml") as template:
   manifest = template.read()
+
+unrecognized = ""
 
 i = 1
 while i < len(sys.argv):
@@ -40,9 +46,10 @@ while i < len(sys.argv):
     #print("Found mpirun environment variable option.")
     i += 2
 
-  elif (i < len(sys.argv) and os.path.isfile(sys.argv[i]) and re.match(".*_mpi$", sys.argv[i])):
+  elif (i < len(sys.argv) and os.path.isfile(os.path.join(modelsDir, sys.argv[i])) \
+  and re.match(".*_mpi$", sys.argv[i])):
     #print("Found model executable name.")
-    manifest = manifest.replace("#<modelExecutable>", f"- {sys.argv[i]}")
+    manifest = manifest.replace("#<modelExecutable>", f"- {os.path.join(modelsDir, sys.argv[i])}")
     i += 1
 
   elif (i + 1 < len(sys.argv) and re.match("^-OpenM\.", sys.argv[i]) \
@@ -53,7 +60,10 @@ while i < len(sys.argv):
     i += 2
 
   else:
-    print(f"Unrecognized option or argument: {sys.argv[i]}")
+    unrecognized += f"Unrecognized option or argument: {sys.argv[i]}"
     i += 1
+
+with open("./etc/unrecognized", "w") as u:
+  u.write(unrecognized)
 
 print(manifest)
