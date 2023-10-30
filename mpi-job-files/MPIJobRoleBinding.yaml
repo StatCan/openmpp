@@ -1,0 +1,15 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: mpi-job-role-binding
+  namespace: aaw-team
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: mpi-job-runner 
+  namespace: aaw-team # Do I need this line?
+subjects:
+- namespace: aaw-team
+  kind: ServiceAccount
+  name: # Not sure, will need to ask. Or maybe create a service account.
+
