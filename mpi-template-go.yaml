@@ -1,0 +1,49 @@
+apiVersion: kubeflow.org/v2beta1
+kind: MPIJob
+metadata:
+  name: {{.JobName}}
+spec:
+  slotsPerWorker: {{.Spw}}
+  runPolicy:
+    cleanPodPolicy: Running
+    ttlSecondsAfterFinished: {{.TTL}}
+  sshAuthMountPath: {{.SSHAMP}}
+  mpiReplicaSpecs:
+    Launcher:
+      replicas: {{.LauncherReplicas}}
+      template:
+        spec:
+          containers:
+          - image: {{.LauncherImageName}}
+            name: {{.ContainerLauncher}}
+            securityContext:
+              runAsUser: {{.LauncherUserID}}
+            command:
+            - mpirun
+            args:
+            - -n
+            - "2"
+            - {{.ContainerPath}}
+            resources:
+              limits:
+                cpu: {{.LauncherCPUs}}
+                memory: {{.LauncherMemSize}}
+    Worker:
+      replicas: {{.WorkerReplicas}}
+      template:
+        spec:
+          containers:
+          - image: {{.WorkerImageName}}
+            name: {{.WorkerLauncher}}
+            securityContext:
+              runAsUser: {{.WorkerUserID}}
+            command:
+            - /usr/sbin/sshd
+            args:
+            - -De
+            - -f
+            - /home/mpiuser/.sshd_config
+            resources:
+              limits:
+                cpu: {{.WorkerCPUs}}
+                memory: {{.WorkerMemSize}}
