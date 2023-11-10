@@ -1,6 +1,7 @@
 import sys
 import re
 import os
+from pathlib import Path
 
 # Working directory is assumed to be: 
 # /opt/openmpp/<openmpp-root-dir>/

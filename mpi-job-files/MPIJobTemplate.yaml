@@ -2,7 +2,6 @@ apiVersion: kubeflow.org/v1
 kind: MPIJob
 metadata:
   name: #<modelName>
-  namespace: aaw-team
 spec:
   #slotsPerWorker: Tensorflow example sets this attribute, but Pat's example template doesn't.
   runPolicy:
