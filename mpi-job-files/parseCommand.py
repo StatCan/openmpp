@@ -1,13 +1,14 @@
 import sys
 import re
 import os
+from time import time
 from pathlib import Path
 
 # Working directory is assumed to be: 
 # /opt/openmpp/<openmpp-root-dir>/
 
 # Directory where model executables are stored:
-modelsDir = os.path.join(Path.home(), "models/bin")
+modelsDir = os.path.join(Path.home(), "buckets/aaw-unclassified")
 
 with open("./etc/MPIJobTemplate.yaml") as template:
   manifest = template.read()
@@ -17,7 +18,7 @@ unrecognized = ""
 i = 1
 while i < len(sys.argv):
   if (i + 1 < len(sys.argv) and re.match("^-modelName$", sys.argv[i])):
-    manifest = manifest.replace("#<modelName>", f"{sys.argv[i+1]}".lower())
+    manifest = manifest.replace("#<mpiJobName>", f"{sys.argv[i+1]}-{time()}".lower())
     i += 2
 
   elif (i + 1 < len(sys.argv) and re.match("^-n$", sys.argv[i]) and re.match("^[0-9]+$", sys.argv[i+1])):
@@ -36,8 +37,9 @@ while i < len(sys.argv):
   
   elif (i + 1 < len(sys.argv) and re.match("^-wdir$", sys.argv[i]) and os.path.isdir(sys.argv[i+1])):
     #print("Found the working directory option and valid path.")
-    manifest = manifest.replace("#<mpirunOption>", \
-      f"- -wdir\n{12*' '}- {sys.argv[i+1]}\n{12*' '}#<mpirunOption>")
+    #manifest = manifest.replace("#<mpirunOption>", \
+    #  f"- -wdir\n{12*' '}- {sys.argv[i+1]}\n{12*' '}#<mpirunOption>")
+    # For now the working directory is hard-coded so ignore this option.
     i += 2
 
   elif (i + 1 < len(sys.argv) and re.match("^-x$", sys.argv[i]) \
