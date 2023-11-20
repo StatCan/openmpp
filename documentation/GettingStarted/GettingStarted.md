@@ -23,7 +23,7 @@ First things first, ensure a namespace is selected.
 Create a notebook.
 Click on the Create a New Notebook server button.
 
-![Create Notebook01](CreateNb01.png)
+![Create Notebook01](CreateNB01.png)
 
 This brings up the new Notebook screen.
 
