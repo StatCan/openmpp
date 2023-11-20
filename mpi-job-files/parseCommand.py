@@ -7,16 +7,11 @@ from pathlib import Path
 # Working directory is assumed to be: 
 # /opt/openmpp/<openmpp-root-dir>/
 
-# Directory used for some start-up options:
-# /etc/openmpp/
-
 # Get directory where model executables are stored:
-#modelsDir = os.path.join(Path.home(), "buckets/aaw-unclassified")
-with open("/etc/openmpp/oms_model_dir") as mD:
-  modelsDir = os.path.join(Path.home(), mD.read())
+with open("./etc/oms_model_dir") as mD:
+  modelsDir = mD.read()
 
 # Load manifest template contents:
-# Note this one is from <root openmpp dir>/etc
 with open("./etc/MPIJobTemplate.yaml") as template:
   manifest = template.read()
 
