@@ -86,7 +86,7 @@ Select the directory you want to upload files to and select the File upload opti
 
 This will bring up a file explorer window where you can select the files you want to upload.
 
-![Kube Flow screen]KFNoteBook08.png)
+![Kube Flow screen](KFNoteBook08.png)
 
 
 To start the OpemM++ UI, simply click on the OpenM++ icon on the Notebooks page.
