@@ -82,16 +82,16 @@ You can create sub-folders inside the Models folder to represent different proje
 
 Select the directory you want to upload files to and select the File upload option
 
-![Kube Flow screen](KFNoteBook07.png)
+![Kube Flow screen](KFNotebook07.png)
 
 This will bring up a file explorer window where you can select the files you want to upload.
 
-![Kube Flow screen](KFNoteBook08.png)
+![Kube Flow screen](KFNotebook08.png)
 
 
 To start the OpemM++ UI, simply click on the OpenM++ icon on the Notebooks page.
 
-![Kube Flow screen](KFNoteBook09.png)
+![Kube Flow screen](KFNotebook09.png)
 
 OpenM++ UI
 This will open a new window with the OpenM++ UI running.
