@@ -1,12 +1,13 @@
 
-Getting started with Kubeflow Notebooks and OpenM++.	2
+# Getting started with Kubeflow Notebooks and OpenM++.
 
 
 Getting started with Kubeflow Notebooks and OpenM++.
 This document is intended to act as an introduction to The AAWs Kubeflow Notebook servers and their use for the OpenM++ project.
 
 
-Starting
+## Starting
+
 To access the AAW Kubeflow portal, navigate to the following website.
 https://kubeflow.aaw-dev.cloud.statcan.ca/  (Net B)
 This will redirect you to a Microsoft log-in page.
@@ -21,7 +22,9 @@ The Kubeflow management panel
 
 
 First things first, ensure a namespace is selected.
-Create a notebook.
+
+## Create a notebook.
+
 Click on the Create a New Notebook server button.
 
 ![Create Notebook01](CreateNB01.png)
@@ -37,7 +40,8 @@ Scroll down to see the Launch Button.  The Launch button will only be active aft
 Advanced options are covered in Section ZZZZ.  You should not normally need to open this option.
 Press the Launch button to launch you new Notebook.
 
-Existing Notebooks
+### Existing Notebooks
+
 If you have previously created a notebook, you can click on the Notebooks Tab.
 
 ![Notebook screen](NewNBScreen03.png)
@@ -49,7 +53,7 @@ See section XXXX for instructions on how to delete resources.
 
 To start an existing Notebook, select it and press the CONNECT button.
 
-Your Kubeflow notebook.
+## Your Kubeflow notebook.
 
 ![Kube Flow screen](KFNotebook01.png)
 
@@ -93,8 +97,9 @@ To start the OpemM++ UI, simply click on the OpenM++ icon on the Notebooks page.
 
 ![Kube Flow screen](KFNotebook09.png)
 
-OpenM++ UI
 This will open a new window with the OpenM++ UI running.
+
+## OpenM++ UI
 
 ![OpenM UI screen](OpenMUI01.png)
 
