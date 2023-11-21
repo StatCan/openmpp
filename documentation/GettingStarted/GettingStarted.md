@@ -36,15 +36,13 @@ To create a new Notebook, three things must be set:
 - Ensure the correct Namespace is selected.
 - A unique name in the name field. A timestamped name is automatically generated in the Name field (timestamped) when you click in it,
 - then click on the Notebook type you want.
--- For OpenM++, select the JupyterLab option.
+  - For OpenM++, select the JupyterLab option.
+- If you are working with Protected B Data, select the Protected B checkbox
 
-For a discussion of what the other options can be used for, see section XXXX.
-
-Scroll down to see the Launch Button.  The Launch button will only be active after the Namespace, the Notebook Name and a Notebook type are selected.
+Scroll down to see the Launch Button.  The Launch button will only be active after the above options are selected.
  
 ![Notebook screen](NewNBScreen02.png)
 
-Advanced options are covered in Section ZZZZ.  You should not normally need to open this option.
 Press the Launch button to launch you new Notebook.
 
 [For more information about Statcan AAW Kubeflow, Click here.](https://statcan.github.io/aaw/en/1-Experiments/Kubeflow/)
