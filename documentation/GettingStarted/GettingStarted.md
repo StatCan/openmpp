@@ -84,7 +84,16 @@ Click on the Hamburger Menu on the top right to open the sidebar.
 
 ![OpenM UI screen](OpenMUI03.png)
 
+Store Models and Data in the Notebook's mounted Blob storage bucket.
 
+unclassified: `/home/jovyan/buckets/aaw-unclassified/microsim/models`
+protected-b: `/home/jovyan/buckets/protected-b/microsim/models`
+
+The log files should appear under the `Microsim` parent directory.
+
+Please see the following link for more information on this topic:
+
+[Azure Blob storage](https://statcan.github.io/aaw/en/5-Storage/AzureBlobStorage/)
 
 Click on the Model you want (Left Panel) to select it.  
 
@@ -100,7 +109,7 @@ To Run a Model, first the Model name must be entered.  Clicking in the Model Nam
 
 ![OpenM UI screen](OpenMUI06.png)
 
-One final step.  All OpenM jobs run using Statcan Kubeflow run using MPI.  This allows multi-processors execution of your jobs.
+To run models using multi-processing (MPI), the following must be done.  This will only work for MPI enabled models.
 
 In the **Cluster Run Options** tab, ensure that:
 - at least one Process is selected in the **MPI Number of Processes** and
@@ -114,12 +123,4 @@ This will run the Model and brings up the Model Run Results Panel which shows th
 
 ![OpenM UI screen](OpenMUI07.png)
 
-## Blob Storage.
 
-You models and Data will be stored in a storage bucket attached to your namespace.  
-
-Please remember to store Protected B classified data and models in a Protected B bucket, and un-protected data and models in an unclassified bucket.
-
-Please see the following link for more information on this topic:
-
-[Azure Blob storage](https://statcan.github.io/aaw/en/5-Storage/AzureBlobStorage/)
