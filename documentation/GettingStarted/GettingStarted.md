@@ -9,7 +9,9 @@ This document is intended to act as an introduction to The AAWs Kubeflow Noteboo
 ## Starting
 
 To access the AAW Kubeflow portal, navigate to the following website.
-[Kubeflow](https://kubeflow.aaw.cloud.statcan.ca/) 
+
+[https://kubeflow.aaw.cloud.statcan.ca/](https://kubeflow.aaw.cloud.statcan.ca/) 
+
 This will redirect you to a Microsoft log-in page.
 
 ![Login01](Login01.png)
@@ -19,9 +21,6 @@ After your credentials are authenticated, you will be redirected to the AAW Kube
 The Kubeflow management panel
 
 ![Kube Flow Management Panel](KFMP01.png)
-
-
-First things first, ensure a namespace is selected.
 
 ## Create a notebook.
 
@@ -39,6 +38,7 @@ Scroll down to see the Launch Button.  The Launch button will only be active aft
 
 Advanced options are covered in Section ZZZZ.  You should not normally need to open this option.
 Press the Launch button to launch you new Notebook.
+
 [For more information about Statcan AAW Kubeflow, Click here.](https://statcan.github.io/aaw/en/1-Experiments/Kubeflow/)
 
 ### Existing Notebooks
