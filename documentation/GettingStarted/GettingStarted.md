@@ -59,7 +59,9 @@ This will bring up a window with all your existing Notebooks.
 
 To start an existing Notebook, select it and press the CONNECT button.
 
-If the Connect button is disabled, click on the triangle (Start image) button to start the image, and then connect when it becomes avaliable 
+If the **Connect button** is disabled, click on the triangle (Start image) button to start the image, and then **connect** when it becomes avaliable .
+
+![Notebook screen](startNb01.png)
 
 ## Your Kubeflow notebook.
 
@@ -100,9 +102,15 @@ To Run a Model, first the Model name must be entered.  Simply clicking in the Mo
 
 ![OpenM UI screen](OpenMUI06.png)
 
-You can then click the Run the Model to run the job.
+One final step.  All OpenM jobs run using Statcan Kubeflow run using MPI.  This allows multi-processors execution of your jobs.
 
-Note. add section on selecting template!
+In the **Cluster Run Options** tab, ensure that:
+- at least one Process is selected in the **MPI Number of Processes** and
+- the templated selected in the **MPI Model Run Template** is: **mpi.ModelRun.template.txt**
+
+![OpenM UI Cluster options](OpenMUI08.png)
+
+You can then click the Run the Model to run the job.
 
 This brings up the Model Run Results Panel which shows the results of the run.
 
