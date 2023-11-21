@@ -1,8 +1,6 @@
 
 # Getting started with Kubeflow Notebooks and OpenM++.
 
-
-Getting started with Kubeflow Notebooks and OpenM++.
 This document is intended to act as an introduction to The AAWs Kubeflow Notebook servers and their use for the OpenM++ project.
 
 
@@ -59,7 +57,7 @@ This will bring up a window with all your existing Notebooks.
 
 To start an existing Notebook, select it and press the CONNECT button.
 
-If the **Connect button** is disabled, click on the triangle (Start image) button to start the image, and then **connect** when it becomes avaliable .
+If the **Connect button** is disabled, click on the triangle (Start image) button to start the image, and then click on **connect** when it becomes avaliable .
 
 ![Notebook screen](startNb01.png)
 
@@ -67,7 +65,7 @@ If the **Connect button** is disabled, click on the triangle (Start image) butto
 
 ![Kube Flow screen](KFNotebook01.png)
 
-To start the OpemM++ UI, simply click on the OpenM++ icon on the Notebooks page.
+To start the OpenM++ UI, click on the OpenM++ icon on the Notebooks page.
 
 ![Kube Flow screen](KFNotebook09.png)
 
@@ -98,7 +96,7 @@ The horizontal tabs are also active (but greyed out) at this time.
 
 ![OpenM UI screen](OpenMUI05.png)
 
-To Run a Model, first the Model name must be entered.  Simply clicking in the Model Name box will generate a uniquely timestamped Model name for the run.
+To Run a Model, first the Model name must be entered.  Clicking in the Model Name box will generate a uniquely timestamped Model name for the run.
 
 ![OpenM UI screen](OpenMUI06.png)
 
@@ -110,9 +108,9 @@ In the **Cluster Run Options** tab, ensure that:
 
 ![OpenM UI Cluster options](OpenMUI08.png)
 
-You can then click the Run the Model to run the job.
+You can then click the **Run the Model** to run the job.
 
-This brings up the Model Run Results Panel which shows the results of the run.
+This will run the Model and brings up the Model Run Results Panel which shows the results of the run.
 
 ![OpenM UI screen](OpenMUI07.png)
 
