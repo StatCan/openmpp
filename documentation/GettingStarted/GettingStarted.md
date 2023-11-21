@@ -17,7 +17,9 @@ This will redirect you to a Microsoft log-in page.
 ![Login01](Login01.png)
 
 Select the account you wish to use and proceed with the authentication.
+
 After your credentials are authenticated, you will be redirected to the AAW Kubeflow management panel. 
+
 The Kubeflow management panel
 
 ![Kube Flow Management Panel](KFMP01.png)
@@ -30,9 +32,15 @@ Click on the Create a New Notebook server button.
 
 This brings up the new Notebook screen.
 
-NewNBScreen01
-Again, ensure the correct Namespace is selected, and a unique name is provided in the Name field, then click on the Notebook type you want.  For OpenM++, select the JupyterLab wafer.  For a discussion of what the other options can be used for, see section XXXX.
-Scroll down to see the Launch Button.  The Launch button will only be active after the Namespace, the Notebook Name and a notebook type are selected.
+To create a new Notebook, three things must be set:
+- Ensure the correct Namespace is selected.
+- A unique name in the name field. A timestamped name is automatically generated in the Name field (timestamped) when you click in it,
+- then click on the Notebook type you want.
+-- For OpenM++, select the JupyterLab option.
+
+For a discussion of what the other options can be used for, see section XXXX.
+
+Scroll down to see the Launch Button.  The Launch button will only be active after the Namespace, the Notebook Name and a Notebook type are selected.
  
 ![Notebook screen](NewNBScreen02.png)
 
@@ -43,7 +51,7 @@ Press the Launch button to launch you new Notebook.
 
 ### Existing Notebooks
 
-If you have previously created a notebook, you can click on the Notebooks Tab.
+If you have previously created a notebook, you can reuse it by clicking on the Notebooks Tab.
 
 ![Notebook screen](NewNBScreen03.png)
 
@@ -53,9 +61,13 @@ This will bring up a window with all your existing Notebooks.
 
 To start an existing Notebook, select it and press the CONNECT button.
 
+If the Connect button is disabled, click on the triangle (Start image) button to start the image, and then connect when it becomes avaliable 
+
 ## Your Kubeflow notebook.
 
-[Click here for the information regarding Azure Blob storage](https://statcan.github.io/aaw/en/5-Storage/AzureBlobStorage/)
+You models and Data will be sotred in a starage bucket attached to your namespace.  Please see the following link for more information:
+
+[Azure Blob storage](https://statcan.github.io/aaw/en/5-Storage/AzureBlobStorage/)
 
 To start the OpemM++ UI, simply click on the OpenM++ icon on the Notebooks page.
 
