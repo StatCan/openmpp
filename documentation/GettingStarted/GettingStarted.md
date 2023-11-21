@@ -18,8 +18,6 @@ Select the account you wish to use and proceed with the authentication.
 
 After your credentials are authenticated, you will be redirected to the AAW Kubeflow management panel. 
 
-The Kubeflow management panel
-
 ![Kube Flow Management Panel](KFMP01.png)
 
 ## Create a notebook.
@@ -32,7 +30,7 @@ This brings up the new Notebook screen.
 
 To create a new Notebook, three things must be set:
 - Ensure the correct Namespace is selected.
-- A unique name in the name field. A timestamped name is automatically generated in the Name field (timestamped) when you click in it,
+- A unique name in the name field. A unique name is automatically generated in the Name field when you click in it,
 - then click on the Notebook type you want.
   - For OpenM++, select the JupyterLab option.
 - If you are working with Protected B Data, select the **Run in Protected B notebook** checkbox
@@ -88,7 +86,9 @@ Click on the Hamburger Menu on the top right to open the sidebar.
 
 
 
-Click on the Model you want (Left Panel) to select it, In this case the IDMM Model.  This brings up the Model Run Panel and activates the Input Scenarios and Run the Model tabs on the Right Panel.
+Click on the Model you want (Left Panel) to select it.  
+
+This brings up the Model Run Panel and activates the Input Scenarios and Run the Model tabs on the Right Panel.
 
 ![OpenM UI screen](OpenMUI04.png)
 
