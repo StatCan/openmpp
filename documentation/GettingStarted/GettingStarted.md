@@ -37,9 +37,9 @@ To create a new Notebook, three things must be set:
 - A unique name in the name field. A timestamped name is automatically generated in the Name field (timestamped) when you click in it,
 - then click on the Notebook type you want.
   - For OpenM++, select the JupyterLab option.
-- If you are working with Protected B Data, select the Protected B checkbox
+- If you are working with Protected B Data, select the **Run in Protected B notebook** checkbox
 
-Scroll down to see the Launch Button.  The Launch button will only be active after the above options are selected.
+Scroll down to see the **Launch Button.**  The Launch button will only be active after the above options are selected.
  
 ![Notebook screen](NewNBScreen02.png)
 
@@ -110,6 +110,10 @@ This brings up the Model Run Results Panel which shows the results of the run.
 
 ## Blob Storage.
 
-You models and Data will be stored in a storage bucket attached to your namespace.  Please see the following link for more information:
+You models and Data will be stored in a storage bucket attached to your namespace.  
+
+Please remember to store Portected B classifid data and models in a Protected B bucket, and un-protected data and models in an unclassified bucket.
+
+Please see the following link for more information on this topic:
 
 [Azure Blob storage](https://statcan.github.io/aaw/en/5-Storage/AzureBlobStorage/)
