@@ -112,7 +112,7 @@ This brings up the Model Run Results Panel which shows the results of the run.
 
 You models and Data will be stored in a storage bucket attached to your namespace.  
 
-Please remember to store Portected B classifid data and models in a Protected B bucket, and un-protected data and models in an unclassified bucket.
+Please remember to store Protected B classified data and models in a Protected B bucket, and un-protected data and models in an unclassified bucket.
 
 Please see the following link for more information on this topic:
 
