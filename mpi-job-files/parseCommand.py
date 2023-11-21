@@ -9,7 +9,7 @@ from pathlib import Path
 
 # Get directory where model executables are stored:
 with open("./etc/oms_model_dir") as mD:
-  modelBinsDir = mD.read()
+  modelBinsDir = os.path.join(mD.read(), "/bin")
 
 # Load manifest template contents:
 with open("./etc/MPIJobTemplate.yaml") as template:
