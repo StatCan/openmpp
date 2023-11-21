@@ -9,7 +9,7 @@ This document is intended to act as an introduction to The AAWs Kubeflow Noteboo
 ## Starting
 
 To access the AAW Kubeflow portal, navigate to the following website.
-https://kubeflow.aaw-dev.cloud.statcan.ca/  (Net B)
+[Kubeflow](https://kubeflow.aaw.cloud.statcan.ca/) 
 This will redirect you to a Microsoft log-in page.
 
 ![Login01](Login01.png)
@@ -39,6 +39,7 @@ Scroll down to see the Launch Button.  The Launch button will only be active aft
 
 Advanced options are covered in Section ZZZZ.  You should not normally need to open this option.
 Press the Launch button to launch you new Notebook.
+[For more information about Statcan AAW Kubeflow, Click here.](https://statcan.github.io/aaw/en/1-Experiments/Kubeflow/)
 
 ### Existing Notebooks
 
@@ -46,8 +47,7 @@ If you have previously created a notebook, you can click on the Notebooks Tab.
 
 ![Notebook screen](NewNBScreen03.png)
 
-This will bring up a window with all your existing Notebooks.  You can manage them here.  
-See section XXXX for instructions on how to delete resources.
+This will bring up a window with all your existing Notebooks.  
 
 ![Notebook screen](NewNBScreen04.png)
 
@@ -55,43 +55,7 @@ To start an existing Notebook, select it and press the CONNECT button.
 
 ## Your Kubeflow notebook.
 
-![Kube Flow screen](KFNotebook01.png)
-
-
-Initial tasks after creating a Notebook.
-If you have just created this Notebook, then you will need to set-up the Models directory.
-Select the Folder icon by clicking on it.
-
-![Kube Flow screen](KFNotebook02.png)
-
-This will bring up the File explorer.
-
-![Kube Flow screen](KFNotebook03.png)
-
-Note, the aaw-unclassified-ro folder is not an error. It allows a convenient place where unclassified data can be stored.  This folder is read-only (hence the ro ending) and is used to draw data from, not write to.
-The Models directory must be placed directly under the bucket you are going to use.
-For example, if your model uses protected-b classified data, then it must be created under the            aaw-protected-b bucket folder.
-
-![Kube Flow screen](KFNotebook04.png)
-
-Otherwise, it can be created under the unclassified bucket folder.
-The OpenM++ Models directory must be created at this location so that OpenM++ can find and run the models.
-
-You can create sub-folders inside the Models folder to represent different project and upload files to them as needed.  Click on the New Folder icon to create a folder in the desired location.
-
-![Kube Flow screen](KFNotebook05.png)
-
-![Kube Flow screen](KFNotebook06.png)
-
-
-Select the directory you want to upload files to and select the File upload option
-
-![Kube Flow screen](KFNotebook07.png)
-
-This will bring up a file explorer window where you can select the files you want to upload.
-
-![Kube Flow screen](KFNotebook08.png)
-
+[Click here for the information regarding Azure Blob storage](https://statcan.github.io/aaw/en/5-Storage/AzureBlobStorage/)
 
 To start the OpemM++ UI, simply click on the OpenM++ icon on the Notebooks page.
 
