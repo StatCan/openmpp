@@ -31,7 +31,7 @@ manifest = manifest.replace("#<mpirunOption>", \
 i = 1
 while i < len(sys.argv):
   if (i + 1 < len(sys.argv) and re.match("^-modelName$", sys.argv[i])):
-    manifest = manifest.replace("#<mpiJobName>", f"{sys.argv[i+1]}-{time()}".lower())
+    manifest = manifest.replace("#<mpiJobName>", f"{sys.argv[i+1]}-{str(time()).replace('.', '-')}".lower())
     i += 2
 
   # Number of replicas to create:
