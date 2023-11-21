@@ -9,19 +9,23 @@ from pathlib import Path
 
 # Get directory where model executables are stored:
 with open("./etc/oms_model_dir") as mD:
-  modelsDir = mD.read()
+  modelBinsDir = mD.read()
 
 # Load manifest template contents:
 with open("./etc/MPIJobTemplate.yaml") as template:
   manifest = template.read()
 
-# Save unrecognized command line options for debugging:
+# Save input arguments to file for debugging:
+with open("./etc/inputArguments", "w") as inputArgs:
+  inputArgs.write(' '.join(sys.argv))
+ 
+# Save unrecognized command line options to file for debugging:
 unrecognized = ""
 
 # Some manifest values are based on system configuration:
-# Set model directory:
+# Set working directory for mpirun to the ...models/bin directory:
 manifest = manifest.replace("#<mpirunOption>", \
-  f"- -wdir\n{12*' '}- {modelsDir}\n{12*' '}#<mpirunOption>")
+  f"- -wdir\n{12*' '}- {modelBinsDir}\n{12*' '}#<mpirunOption>")
 
 # The remaining manifest values come from command line options passed by oms:
 i = 1
@@ -57,9 +61,10 @@ while i < len(sys.argv):
     i += 2
 
   # Model executable name:
-  elif (i < len(sys.argv) and os.path.isfile(os.path.join(modelsDir, sys.argv[i])) \
+  elif (i < len(sys.argv) and os.path.isfile(os.path.join(modelBinsDir, sys.argv[i])) \
   and re.match(".*_mpi$", sys.argv[i])):
-    manifest = manifest.replace("#<modelExecutable>", f"- {os.path.join(modelsDir, sys.argv[i])}")
+    manifest = manifest.replace("#<modelExecutable>", \
+      f"- {os.path.join(modelBinsDir, sys.argv[i])}")
     i += 1
 
   # OpenM options and arguments:
