@@ -63,9 +63,7 @@ If the Connect button is disabled, click on the triangle (Start image) button to
 
 ## Your Kubeflow notebook.
 
-You models and Data will be sotred in a starage bucket attached to your namespace.  Please see the following link for more information:
-
-[Azure Blob storage](https://statcan.github.io/aaw/en/5-Storage/AzureBlobStorage/)
+![Kube Flow screen](KFNotebook01.png)
 
 To start the OpemM++ UI, simply click on the OpenM++ icon on the Notebooks page.
 
@@ -104,7 +102,14 @@ To Run a Model, first the Model name must be entered.  Simply clicking in the Mo
 
 You can then click the Run the Model to run the job.
 
+Note. add section on selecting template!
 
 This brings up the Model Run Results Panel which shows the results of the run.
 
 ![OpenM UI screen](OpenMUI07.png)
+
+## Blob Storage.
+
+You models and Data will be stored in a storage bucket attached to your namespace.  Please see the following link for more information:
+
+[Azure Blob storage](https://statcan.github.io/aaw/en/5-Storage/AzureBlobStorage/)
