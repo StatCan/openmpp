@@ -13,7 +13,7 @@ spec:
       template:
         metadata:
           labels:
-            data.statcn.gc.ca/inject-blob-volumes: 'true' # Access blob storage.
+            data.statcan.gc.ca/inject-blob-volumes: 'true' # Access blob storage.
             sidecar.istio.io/inject: "false" # Init container conflicts with istio.
         spec:
           containers:
@@ -40,7 +40,7 @@ spec:
       template:
         metadata:
           labels:
-            data.statcn.gc.ca/inject-blob-volumes: 'true' # Access blob storage.
+            data.statcan.gc.ca/inject-blob-volumes: 'true' # Access blob storage.
             sidecar.istio.io/inject: "false" # Init container conflicts with istio.
         spec:
           containers:
