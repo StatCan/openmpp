@@ -1,7 +1,8 @@
 apiVersion: kubeflow.org/v1
 kind: MPIJob
 metadata:
-  name: #<modelName>
+  name: #<mpiJobName>
+  namespace: openmpp-uat
 spec:
   #slotsPerWorker: Tensorflow example sets this attribute, but Pat's example template doesn't.
   runPolicy:
@@ -12,13 +13,13 @@ spec:
       template:
         metadata:
           labels:
-            data.statcn.gc.ca/inject-blob-volumes: 'true' # Access blob storage.
+            data.statcan.gc.ca/inject-blob-volumes: 'true' # Access blob storage.
             sidecar.istio.io/inject: "false" # Init container conflicts with istio.
         spec:
           containers:
           - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:d1174244baa102b26f0850c3883e7b15c50a3b64
             # There must be a better way than just hardcoding these image names in here, right?
-            name: #<modelName>-launcher
+            name: #<mpiJobName>-launcher
             command:
             - mpirun
             #<mpirunOption>
@@ -35,11 +36,15 @@ spec:
     Worker:
       replicas: #<numberOfReplicas>
       template:
+        metadata:
+          labels:
+            data.statcan.gc.ca/inject-blob-volumes: 'true' # Access blob storage.
+            sidecar.istio.io/inject: "false" # Init container conflicts with istio.
         spec:
           containers:
           - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:d1174244baa102b26f0850c3883e7b15c50a3b64
             # Same as above, I don't think this should be hardcoded in like this.
-            name: #<modelName>-worker
+            name: #<mpiJobName>-worker
             resources:
                 limits:
                   cpu: '2'
