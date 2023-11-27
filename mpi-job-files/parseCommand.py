@@ -19,10 +19,16 @@ with open("./etc/MPIJobTemplate.yaml") as template:
 with open("./etc/inputArguments", "w") as inputArgs:
   inputArgs.write(' '.join(sys.argv))
  
+with open("/etc/hostname") as nN:
+  notebookName = nN.read()
+
 # Save unrecognized command line options to file for debugging:
 unrecognized = ""
 
 # Some manifest values are based on system configuration:
+# Set notebook name label so we can filter mpijobs by label for deletion:
+manifest = manifest.replace("#<notebookName>", notebookName)
+
 # Set working directory for mpirun to the ...models/bin directory:
 manifest = manifest.replace("#<mpirunOption>", \
   f"- -wdir\n{12*' '}- {modelBinsDir}\n{12*' '}#<mpirunOption>")
