@@ -3,6 +3,8 @@ kind: MPIJob
 metadata:
   name: #<mpiJobName>
   namespace: openmpp-uat
+  labels:
+    notebook-name: #<notebookName>
 spec:
   #slotsPerWorker: Tensorflow example sets this attribute, but Pat's example template doesn't.
   runPolicy:
