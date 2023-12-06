@@ -19,7 +19,7 @@ spec:
             sidecar.istio.io/inject: "false" # Init container conflicts with istio.
         spec:
           containers:
-          - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:d1174244baa102b26f0850c3883e7b15c50a3b64
+          - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:0f80cf47bb5d6f6e025990e511b72be614bbcf7c
             # There must be a better way than just hardcoding these image names in here, right?
             name: #<mpiJobName>-launcher
             command:
@@ -44,7 +44,7 @@ spec:
             sidecar.istio.io/inject: "false" # Init container conflicts with istio.
         spec:
           containers:
-          - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:d1174244baa102b26f0850c3883e7b15c50a3b64
+          - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:0f80cf47bb5d6f6e025990e511b72be614bbcf7c
             # Same as above, I don't think this should be hardcoded in like this.
             name: #<mpiJobName>-worker
             resources:
