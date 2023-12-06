@@ -2,7 +2,7 @@ apiVersion: kubeflow.org/v1
 kind: MPIJob
 metadata:
   name: #<mpiJobName>
-  namespace: openmpp-uat
+  # namespace: By default will be assigned the same namespace as notebook.
   labels:
     notebook-name: #<notebookName>
 spec:
