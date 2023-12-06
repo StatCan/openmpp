@@ -2,6 +2,9 @@
 
 # Working directory is assumed to be: /opt/openmpp/<openmpp-root-dir>/
 
+# Send input arguments to console for debugging purposes:
+echo "$@"
+
 # Parse openm web service arguments and create manifest instance:
 manifest=$(python3 ./bin/parseCommand.py "$@")
 

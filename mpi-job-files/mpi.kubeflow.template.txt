@@ -43,10 +43,16 @@ none
 {{end}} 
 */}}
 
-echo "ModelName: {{.ModelName}}"
-echo "ExeStem: {{.ExeStem}}"
-echo "Dir: {{.Dir}}"
-echo "BinDir: {{.BinDir}}"
-echo "DbPath: {{.DbPath}}"
-echo "HostFile: {{.HostFile}}"
-echo ""
+ModelName:
+{{.ModelName}}
+ExeStem: 
+{{.ExeStem}}
+Dir: 
+{{.Dir}}
+BinDir: 
+{{.BinDir}}
+DbPath: 
+{{.DbPath}}
+HostFile: 
+{{.HostFile}}
+
