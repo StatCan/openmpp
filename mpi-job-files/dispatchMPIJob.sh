@@ -14,17 +14,18 @@ kubectl apply -f - <<< "$manifest"
 # Now we'd like to run some kind of job monitoring command that returns success when MPIJob is done.
 #kubectl wait --for=condition=complete job/MPIJob
 
-# * Need mpijobname as shell variable. *
-
 # Will try a polling loop with kubectl describe and grepping for relevant parts.
 # The terminating condition will be status succeeded or failed.
-while [condition];
-do
-  foo = $(kubectl describe mpijobs/"$mpijobname" | grep foo) 
-  bar = $(kubectl describe mpijobs/"$mpijobname" | grep bar)
-  baz = $(kubectl describe mpijobs/"$mpijobname" | grep baz)
+mpijobstatus=""
+mpijobname=$(<./etc/mpiJobName)
 
-  # Echo some output based on foo bar baz so that it's routed to openmpp UI.
+while [ "$mpijobstatus" != *"Succeeded"* && "$mpijobstatus" != *"Failed"* ];
+do
+  # Echo a simple status update. We can elaborate on this later.
+  mpijobstatus=$(kubectl describe mpijobs/"$mpijobname" | grep status) 
+  echo $mpijobstatus
+  echo ". . ."
 
   # Wait a short interval
+  wait 5
 done

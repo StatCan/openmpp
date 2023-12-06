@@ -18,7 +18,7 @@ with open("./etc/MPIJobTemplate.yaml") as template:
 # Save input arguments to file for debugging:
 with open("./etc/inputArguments", "w") as inputArgs:
   inputArgs.write(' '.join(sys.argv))
- 
+
 with open("/etc/hostname") as nN:
   notebookName = nN.read()
 
@@ -37,7 +37,10 @@ manifest = manifest.replace("#<mpirunOption>", \
 i = 1
 while i < len(sys.argv):
   if (i + 1 < len(sys.argv) and re.match("^-modelName$", sys.argv[i])):
-    manifest = manifest.replace("#<mpiJobName>", f"{sys.argv[i+1]}-{str(time()).replace('.', '-')}".lower())
+    mpiJobName = f"{sys.argv[i+1]}-{str(time()).replace('.', '-')}".lower()
+    manifest = manifest.replace("#<mpiJobName>", mpiJobName)
+    with open("./etc/mpiJobName", "w") as jN:
+      jN.write(mpiJobName)
     i += 2
 
   # Number of replicas to create:
