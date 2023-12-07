@@ -2,11 +2,10 @@
 
 # Working directory is assumed to be: /opt/openmpp/<openmpp-root-dir>/
 
-# Send input arguments to console for debugging purposes:
-echo "$@"
-
 # Parse openm web service arguments and create manifest instance:
 manifest=$(python3 ./bin/parseCommand.py "$@")
+
+cat ./etc/inputArgs
 
 # Create a copy for trouble-shooting:
 echo "$manifest" > ./etc/temp.yaml
@@ -15,18 +14,16 @@ echo "$manifest" > ./etc/temp.yaml
 kubectl apply -f - <<< "$manifest"
 
 # Now we'd like to run some kind of job monitoring command that returns success when MPIJob is done.
-#kubectl wait --for=condition=complete job/MPIJob
-
 # Will try a polling loop with kubectl describe and grepping for relevant parts.
 # The terminating condition will be status succeeded or failed.
-mpijobstatus=""
-mpijobname=$(<./etc/mpiJobName)
+mpiJobStatus=""
+mpiJobName=$(<./etc/mpiJobName)
 
-while [ "$mpijobstatus" != *"Succeeded"* && "$mpijobstatus" != *"Failed"* ];
+while [ "$mpiJobStatus" != *"Succeeded"* && "$mpiJobStatus" != *"Failed"* ];
 do
   # Echo a simple status update. We can elaborate on this later.
-  mpijobstatus=$(kubectl describe mpijobs/"$mpijobname" | grep status) 
-  echo $mpijobstatus
+  mpiJobStatus=$(kubectl describe mpijobs/"$mpiJobName" | grep status) 
+  echo $mpiJobStatus
   echo ". . ."
 
   # Wait a short interval

@@ -37,8 +37,16 @@ manifest = manifest.replace("#<mpirunOption>", \
 i = 1
 while i < len(sys.argv):
   if (i + 1 < len(sys.argv) and re.match("^-modelName$", sys.argv[i])):
+    # Enter model executable name to mpirun command:
+    modelExecutable = '_'.join(os.path.join(modelBinsDir, sys.argv[i+1]), "mpi")
+    if os.path.isfile(modelExecutable):
+      manifest = manifest.replace("#<modelExecutable>", modelExecutable)
+
+    # Enter unique mpijob name:
     mpiJobName = f"{sys.argv[i+1]}-{str(time()).replace('.', '-')}".lower()
     manifest = manifest.replace("#<mpiJobName>", mpiJobName)
+
+    # Pass name to file for monitoring mpijob later:
     with open("./etc/mpiJobName", "w") as jN:
       jN.write(mpiJobName)
     i += 2
@@ -56,11 +64,6 @@ while i < len(sys.argv):
     manifest = manifest.replace("#<mpirunOption>", \
       f"- --bind-to\n{12*' '}- {sys.argv[i+1]}\n{12*' '}#<mpirunOption>")
     i += 2
-  
-  # Working directory for mpirun:
-  elif (i + 1 < len(sys.argv) and re.match("^-wdir$", sys.argv[i]) and os.path.isdir(sys.argv[i+1])):
-    # Ignoring values for this option provided at command line.
-    i += 2
 
   # mpirun environment variable options:
   elif (i + 1 < len(sys.argv) and re.match("^-x$", sys.argv[i]) \
@@ -68,13 +71,6 @@ while i < len(sys.argv):
     manifest = manifest.replace("#<mpirunOption>", \
       f"- -x\n{12*' '}- {sys.argv[i+1]}\n{12*' '}#<mpirunOption>")
     i += 2
-
-  # Model executable name:
-  elif (i < len(sys.argv) and os.path.isfile(os.path.join(modelBinsDir, sys.argv[i])) \
-  and re.match(".*_mpi$", sys.argv[i])):
-    manifest = manifest.replace("#<modelExecutable>", \
-      f"- {os.path.join(modelBinsDir, sys.argv[i])}")
-    i += 1
 
   # OpenM options and arguments:
   elif (i + 1 < len(sys.argv) and re.match("^-OpenM\.", sys.argv[i]) \
@@ -85,7 +81,7 @@ while i < len(sys.argv):
 
   # Unrecognized command line options:
   else:
-    unrecognized += f"Unrecognized option or argument: {sys.argv[i]}"
+    unrecognized += f"{sys.argv[i]}\n"
     i += 1
 
 # Write any unrecognized options to file for debugging:

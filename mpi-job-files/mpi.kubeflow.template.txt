@@ -21,38 +21,35 @@ Example output:
 python3 parseCommand.py -n 4 --bind-to none -wdir /home/jacek/openM++/openmpp_debian_mpi_20230803/models/bin ./RiskPaths_mpi -OpenM.RunStamp 2023_09_27_12_32_11_023 -OpenM.LogToConsole true -OpenM.LogToFile false -OpenM.MessageLanguage en-US -OpenM.RunName RiskPaths_Default_2023_09_27_12_27_50_175 -OpenM.SetName Default -OpenM.SubValues 3 -OpenM.LogRank true -OpenM.Threads 4 | kubectl apply -f -
 */}}
 
-{{/*
+
 ./bin/dispatchMPIJob.sh
+
 -modelName
 {{.ModelName}}
--n
-{{ .MpiNp}}
---bind-to
-none
-{{with .Dir}}
--wdir
-{{.}}
-{{end}}
+
+-exeStem
+{{.ExeStem}}
+
+-dir
+{{.Dir}}
+
+-BinDir
+
+-dbPath
+{{.dbPath}}
+
+-mpiNp
+{{.MpiNp}}
+
+-hostFile
+{{.HostFile}}
+
 {{range $key, $val := .Env}}
 -x
 {{$key}}={{$val}}
 {{end}}
-{{.ExeStem}}_mpi
+
 {{range .Args}}
 {{.}}
 {{end}} 
-*/}}
-
-ModelName:
-{{.ModelName}}
-ExeStem: 
-{{.ExeStem}}
-Dir: 
-{{.Dir}}
-BinDir: 
-{{.BinDir}}
-DbPath: 
-{{.DbPath}}
-HostFile: 
-{{.HostFile}}
 
