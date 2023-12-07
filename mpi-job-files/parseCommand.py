@@ -38,7 +38,7 @@ i = 1
 while i < len(sys.argv):
   if (i + 1 < len(sys.argv) and re.match("^-modelName$", sys.argv[i])):
     # Enter model executable name to mpirun command:
-    modelExecutable = '_'.join(os.path.join(modelBinsDir, sys.argv[i+1]), "mpi")
+    modelExecutable = '_'.join([os.path.join(modelBinsDir, sys.argv[i+1]), "mpi"])
     if os.path.isfile(modelExecutable):
       manifest = manifest.replace("#<modelExecutable>", modelExecutable)
 
