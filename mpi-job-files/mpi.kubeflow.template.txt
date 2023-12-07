@@ -34,6 +34,7 @@ python3 parseCommand.py -n 4 --bind-to none -wdir /home/jacek/openM++/openmpp_de
 {{.Dir}}
 
 -binDir
+{{.BinDir}}
 
 -dbPath
 {{.DbPath}}
