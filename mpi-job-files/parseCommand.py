@@ -52,7 +52,7 @@ while i < len(sys.argv):
     i += 2
 
   # Number of replicas to create:
-  elif (i + 1 < len(sys.argv) and re.match("^-n$", sys.argv[i]) and re.match("^[0-9]+$", sys.argv[i+1])):
+  elif (i + 1 < len(sys.argv) and re.match("^-mpiNp$", sys.argv[i]) and re.match("^[0-9]+$", sys.argv[i+1])):
     manifest = manifest.replace("#<numberOfReplicas>", f"{sys.argv[i+1]}")
     manifest = manifest.replace("#<mpirunOption>", \
       f"- -n\n{12*' '}- '{sys.argv[i+1]}'\n{12*' '}#<mpirunOption>")
