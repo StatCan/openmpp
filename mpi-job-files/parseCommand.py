@@ -40,7 +40,7 @@ while i < len(sys.argv):
     # Enter model executable name to mpirun command:
     modelExecutable = '_'.join([os.path.join(modelBinsDir, sys.argv[i+1]), "mpi"])
     if os.path.isfile(modelExecutable):
-      manifest = manifest.replace("#<modelExecutable>", modelExecutable)
+      manifest = manifest.replace("#<modelExecutable>", f"- {modelExecutable}")
 
     # Enter unique mpijob name:
     mpiJobName = f"{sys.argv[i+1]}-{str(time()).replace('.', '-')}".lower()
