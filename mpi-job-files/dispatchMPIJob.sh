@@ -18,8 +18,11 @@ kubectl apply -f - <<< "$manifest"
 # Will try a polling loop with kubectl describe and grepping for relevant parts.
 # The terminating condition will be status succeeded or failed.
 mpiJobName=$(<./etc/mpiJobName)
-cat "Pending" > ./etc/mpiJobStatusA
+
+touch ./etc/mpiJobStatusA
 touch ./etc/mpiJobStatusB
+
+cat "Pending" > ./etc/mpiJobStatusA
 mpiJobStatus="pending"
 
 while [[ "$mpiJobStatus" != "done" ]]; do
@@ -32,11 +35,9 @@ while [[ "$mpiJobStatus" != "done" ]]; do
   # Copy over newest changes to old file:
   cp -f ./etc/mpiJobStatusB ./etc/mpiJobStatusA
 
-  if [[ $(cat ./etc/mpiJobStatusB | grep "JobSucceeded") != "" ]]
+  if [[ $(cat ./etc/mpiJobStatusB | grep "JobSucceeded") != "" ]]; then
     mpiJobStatus="done"
-  fi
-
-  if [[ $(cat ./etc/mpiJobStatusB | grep "JobSucceeded") == "" ]]
+  else
     # Wait a short interval between updates to UI.
     echo ". . ."
     sleep 5
