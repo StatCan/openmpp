@@ -14,13 +14,13 @@ echo "$manifest" > ./etc/temp.yaml
 # Send manifest to standard input of kubectl:
 kubectl apply -f - <<< "$manifest"
 
-# Get generated name of mpijob:
 mpiJobName=$(<./etc/mpiJobName)
+podStatus=""
 
-podStatus="Pending"
-while [[ podStatus != *"Running"* ]]; do
+while [[ podStatus != *"Running"* && podStatus != *"Completed"* ]]; do
   podStatus=$(kubectl get pods | grep "$mpiJobName-launcher")
-  sleep 2
+  echo "$podStatus"
+  sleep 1
 done
 
 kubectl logs -f "$mpiJobName-launcher"
