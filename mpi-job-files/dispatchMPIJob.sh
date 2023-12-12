@@ -14,6 +14,6 @@ echo "$manifest" > ./etc/temp.yaml
 # Send manifest to standard input of kubectl:
 kubectl apply -f - <<< "$manifest"
 
-wait 5
+sleep 5
 mpiJobName=$(<./etc/mpiJobName)
 kubectl logs -f "$mpiJobName-launcher"
