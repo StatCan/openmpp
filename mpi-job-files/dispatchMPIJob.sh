@@ -17,7 +17,7 @@ kubectl apply -f - <<< "$manifest"
 mpiJobName=$(<./etc/mpiJobName)
 podStatus=""
 
-while [[ podStatus != *"Running"* && podStatus != *"Completed"* ]]; do
+while [[ $podStatus != *"Running"* && $podStatus != *"Completed"* ]]; do
   podStatus=$(kubectl get pods | grep "$mpiJobName-launcher")
   echo "$podStatus"
   sleep 1
@@ -26,14 +26,12 @@ done
 echo "Exited loop."
 echo $podStatus
 
-sleep 25
-kubectl logs "$mpiJobName-launcher"
+#sleep 25
+#kubectl logs "$mpiJobName-launcher"
 
-# echo "Before executing kubectl logs ..."
+kubectl logs -f "$mpiJobName-launcher"
 
-# kubectl logs -f "$mpiJobName-launcher"
-
-# echo "After executing kubectl logs."
+echo "After executing kubectl logs."
 
 # Enable this after testing works out.
 # kubectl delete "mpijobs/$mpiJobName"
