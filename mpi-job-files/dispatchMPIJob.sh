@@ -5,8 +5,8 @@
 # Parse openm web service arguments and create manifest instance:
 manifest=$(python3 ./bin/parseCommand.py "$@")
 
-echo "Input Arguments:"
-cat ./etc/inputArguments
+# echo "Input Arguments:"
+# cat ./etc/inputArguments
 
 # Create a copy for trouble-shooting:
 echo "$manifest" > ./etc/temp.yaml
@@ -26,8 +26,8 @@ cat "Pending" > ./etc/mpiJobStatusA
 mpiJobStatus="pending"
 
 while [[ "$mpiJobStatus" != "done" ]]; do
-  # Echo a simple status update. We can elaborate on this later.
-  kubectl describe mpijobs/"$mpiJobName" | grep "Message" > ./etc/mpiJobStatusB 
+  # Grep for status messages regarding current mpijob displayed by kubectl: 
+  kubectl describe mpijobs/"$mpiJobName" | grep "Message:" > ./etc/mpiJobStatusB 
 
   # Output only newest messages:
   comm -13 ./etc/mpiJobStatusA ./etc/mpiJobStatusB
@@ -35,10 +35,10 @@ while [[ "$mpiJobStatus" != "done" ]]; do
   # Copy over newest changes to old file:
   cp -f ./etc/mpiJobStatusB ./etc/mpiJobStatusA
 
-  if [[ $(cat ./etc/mpiJobStatusB | grep "JobSucceeded") != "" ]]; then
+  if [[ $(cat ./etc/mpiJobStatusB | grep "JobSucceeded") != "" || $(cat ./etc/mpiJobStatusB | grep "JobFailed" != "" ]]; then
     mpiJobStatus="done"
   else
-    # Wait a short interval between updates to UI.
+    # Wait a short interval between updates to UI:
     echo ". . ."
     sleep 5
   fi
