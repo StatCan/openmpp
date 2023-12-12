@@ -34,8 +34,9 @@ while [[ "$mpiJobStatus" != "done" ]]; do
  
   # Copy over newest changes to old file:
   cp -f ./etc/mpiJobStatusB ./etc/mpiJobStatusA
-
-  if [[ $(cat ./etc/mpiJobStatusB | grep "JobSucceeded") != "" || $(cat ./etc/mpiJobStatusB | grep "JobFailed" != "" ]]; then
+                                                                
+  if [[ $(cat ./etc/mpiJobStatusB | grep "JobSucceeded") != "" \
+     || $(cat ./etc/mpiJobStatusB | grep "JobFailed") != "" ]]; then
     mpiJobStatus="done"
   else
     # Wait a short interval between updates to UI:
