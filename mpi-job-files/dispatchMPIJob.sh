@@ -23,13 +23,17 @@ while [[ podStatus != *"Running"* && podStatus != *"Completed"* ]]; do
   sleep 1
 done
 
-echo kubectl get pods | grep "$mpiJobName-launcher"
+echo "Exited loop."
+echo $podStatus
 
-echo "Before executing kubectl logs ..."
+sleep 25
+kubectl logs "$mpiJobName-launcher"
 
-kubectl logs -f "$mpiJobName-launcher"
+# echo "Before executing kubectl logs ..."
 
-echo "After executing kubectl logs."
+# kubectl logs -f "$mpiJobName-launcher"
+
+# echo "After executing kubectl logs."
 
 # Enable this after testing works out.
 # kubectl delete "mpijobs/$mpiJobName"
