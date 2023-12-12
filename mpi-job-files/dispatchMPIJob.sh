@@ -5,12 +5,28 @@
 # Parse openm web service arguments and create manifest instance:
 manifest=$(python3 ./bin/parseCommand.py "$@")
 
-# Create a copy for trouble-shooting:
+# Create a copy of manifest for trouble-shooting:
 echo "$manifest" > ./etc/temp.yaml
 
 # Send manifest to standard input of kubectl:
 kubectl apply -f - <<< "$manifest"
 
-# Now we'd like to run some kind of job monitoring command that returns success when MPIJob is done.
-#kubectl wait --for=condition=complete job/MPIJob
+# Set up variables to check mpijob launcher pod status:
+mpiJobName=$(<./etc/mpiJobName)
+podStatus=""
 
+# Poll for status of mpijob launcher pod until it is running or stopped:
+while [[ $podStatus != *"Running"* && $podStatus != *"Completed"* && $podStatus != *"Error"* ]]; do
+  podStatus=$(kubectl get pods | grep "$mpiJobName-launcher")
+  echo "$podStatus"
+  sleep 1
+done
+
+# Show final pod status before going into logs:
+kubectl get pods | grep "$mpiJobName-launcher"
+
+# Forward logs command output from launcher pod:
+kubectl logs -f "$mpiJobName-launcher"
+
+# Enable this after testing works out.
+# kubectl delete "mpijobs/$mpiJobName"
