@@ -16,9 +16,7 @@ mpiJobName=$(<./etc/mpiJobName)
 podStatus=""
 
 # Poll for status of mpijob launcher pod until it is running or stopped:
-while [[ $podStatus != *"Running"* \ 
-  && $podStatus != *"Completed"* \
-  && $podStatus != *"Error"* ]]; do
+while [[ $podStatus != *"Running"* && $podStatus != *"Completed"* && $podStatus != *"Error"* ]]; do
   podStatus=$(kubectl get pods | grep "$mpiJobName-launcher")
   echo "$podStatus"
   sleep 1
