@@ -77,7 +77,8 @@ while i < len(sys.argv):
   # OpenM options and arguments:
   elif (i + 1 < len(sys.argv) and re.match("^-OpenM\.", sys.argv[i]) \
   and re.match("[a-zA-Z0-9_/\.-]+", sys.argv[i+1])):
-    openmOptions.append(sys.argv[i]).append(sys.argv[i+1])
+    openmOptions.append(sys.argv[i])
+    openmOptions.append(sys.argv[i+1])
     i += 2
 
   # Unrecognized command line options:
