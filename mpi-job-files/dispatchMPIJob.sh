@@ -6,7 +6,7 @@
 manifest=$(python3 ./bin/parseCommand.py "$@")
 
 # Create a copy of manifest for trouble-shooting:
-echo "$manifest" > ./etc/MPIJob-$ManifestInstance.yaml
+echo "$manifest" > "./etc/MPIJob-$ManifestInstance.yaml"
 
 # Send manifest to standard input of kubectl:
 kubectl apply -f - <<< "$manifest"
