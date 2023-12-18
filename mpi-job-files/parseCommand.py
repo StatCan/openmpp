@@ -33,14 +33,16 @@ manifest = manifest.replace("#<notebookName>", notebookName)
 manifest = manifest.replace("#<mpirunOption>", \
   f"- -wdir\n{12*' '}- {modelBinsDir}\n{12*' '}#<mpirunOption>")
 
+#These variables need to be scoped outside of the while loop:
+openmOptions = []
+modelExecutable = ""
+
 # The remaining manifest values come from command line options passed by oms:
 i = 1
 while i < len(sys.argv):
   if (i + 1 < len(sys.argv) and re.match("^-modelName$", sys.argv[i])):
-    # Enter model executable name to mpirun command:
+    # Construct fully qualified model executable name:
     modelExecutable = '_'.join([os.path.join(modelBinsDir, sys.argv[i+1]), "mpi"])
-    if os.path.isfile(modelExecutable):
-      manifest = manifest.replace("#<modelExecutable>", f"- {modelExecutable}")
 
     # Enter unique mpijob name:
     mpiJobName = f"{sys.argv[i+1]}-{str(time()).replace('.', '-')}".lower()
@@ -75,8 +77,8 @@ while i < len(sys.argv):
   # OpenM options and arguments:
   elif (i + 1 < len(sys.argv) and re.match("^-OpenM\.", sys.argv[i]) \
   and re.match("[a-zA-Z0-9_/\.-]+", sys.argv[i+1])):
-    manifest = manifest.replace("#<OpenMOption>", \
-      f"- {sys.argv[i]}\n{12*' '}- '{sys.argv[i+1]}'\n{12*' '}#<OpenMOption>") 
+    openmOptions.append(sys.argv[i])
+    openmOptions.append(sys.argv[i+1])
     i += 2
 
   # Unrecognized command line options:
@@ -85,8 +87,12 @@ while i < len(sys.argv):
     i += 1
 
 # Write any unrecognized options to file for debugging:
-with open("./etc/unrecognized", "w") as u:
+with open("./etc/unrecognizedCmdLineOptions", "w") as u:
   u.write(unrecognized)
+
+# Compose bash arguments and replace placeholder in mpijob template:
+bashArguments = f"ulimit -s 63356 && {modelExecutable} {' '.join(openmOptions)}"
+manifest = manifest.replace("#<bashArguments>", f'- "{bashArguments}"')
 
 # Print manifest to standard output:
 print(manifest)
