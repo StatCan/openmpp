@@ -5,6 +5,13 @@
 # Parse openm web service arguments and create manifest instance:
 manifest=$(python3 ./bin/parseCommand.py "$@")
 
+# KLW 16-01-2024 https://github.com/StatCan/openmpp/issues/51
+if [[ -z $manifest ]]; then
+  echo "ERROR: path to MPI model executable does not exist"
+  echo "Did you compile it?"
+  exit 1
+fi
+
 # Create a copy of manifest for trouble-shooting:
 echo "$manifest" > "./etc/MPIJob-$ManifestInstance.yaml"
 
