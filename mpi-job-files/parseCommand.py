@@ -44,6 +44,10 @@ while i < len(sys.argv):
     # Construct fully qualified model executable name:
     modelExecutable = '_'.join([os.path.join(modelBinsDir, sys.argv[i+1]), "mpi"])
 
+    # KLW 16-01-2024 https://github.com/StatCan/openmpp/issues/51
+    if not os.path.isfile(modelExecutable):
+        exit()
+      
     # Enter unique mpijob name:
     mpiJobName = f"{sys.argv[i+1]}-{str(time()).replace('.', '-')}".lower()
     manifest = manifest.replace("#<mpiJobName>", mpiJobName)
