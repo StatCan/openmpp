@@ -20,7 +20,8 @@ with open("./etc/MPIJobTemplate.yaml") as template:
 with open("./etc/inputArguments", "w") as inputArgs:
   inputArgs.write(' '.join(sys.argv))
 
-with open("./etc/hostname") as nN:
+#no dot!
+with open("/etc/hostname") as nN:
   notebookName = nN.read()
 
 # Save unrecognized command line options to file for debugging:
