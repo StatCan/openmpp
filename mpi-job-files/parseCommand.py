@@ -9,18 +9,18 @@ import subprocess
 # /opt/openmpp/<openmpp-root-dir>/
 
 # Get directory where model executables are stored:
-with open("./oms_model_dir") as mD:
+with open("./etc/oms_model_dir") as mD:
   modelBinsDir = os.path.join(mD.read().strip("\n"), "bin".strip("\n"))
 
 # Load manifest template contents:
-with open("./MPIJobTemplate.yaml") as template:
+with open("./etc/MPIJobTemplate.yaml") as template:
   manifest = template.read()
 
 # Save input arguments to file for debugging:
-with open("./inputArguments", "w") as inputArgs:
+with open("./etc/inputArguments", "w") as inputArgs:
   inputArgs.write(' '.join(sys.argv))
 
-with open("./hostname") as nN:
+with open("./etc/hostname") as nN:
   notebookName = nN.read()
 
 # Save unrecognized command line options to file for debugging:
