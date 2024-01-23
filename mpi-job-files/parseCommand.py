@@ -3,23 +3,24 @@ import re
 import os
 from time import time
 from pathlib import Path
+import subprocess
 
 # Working directory is assumed to be: 
 # /opt/openmpp/<openmpp-root-dir>/
 
 # Get directory where model executables are stored:
-with open("./etc/oms_model_dir") as mD:
+with open("./oms_model_dir") as mD:
   modelBinsDir = os.path.join(mD.read().strip("\n"), "bin".strip("\n"))
 
 # Load manifest template contents:
-with open("./etc/MPIJobTemplate.yaml") as template:
+with open("./MPIJobTemplate.yaml") as template:
   manifest = template.read()
 
 # Save input arguments to file for debugging:
-with open("./etc/inputArguments", "w") as inputArgs:
+with open("./inputArguments", "w") as inputArgs:
   inputArgs.write(' '.join(sys.argv))
 
-with open("/etc/hostname") as nN:
+with open("./hostname") as nN:
   notebookName = nN.read()
 
 # Save unrecognized command line options to file for debugging:
@@ -40,10 +41,11 @@ modelExecutable = ""
 # The remaining manifest values come from command line options passed by oms:
 i = 1
 while i < len(sys.argv):
+  #rint(sys.argv[i])
   if (i + 1 < len(sys.argv) and re.match("^-modelName$", sys.argv[i])):
     # Construct fully qualified model executable name:
     modelExecutable = '_'.join([os.path.join(modelBinsDir, sys.argv[i+1]), "mpi"])
-
+    modelName = sys.argv[i+1]
     # KLW 16-01-2024 https://github.com/StatCan/openmpp/issues/51
     if not os.path.isfile(modelExecutable):
         exit()
@@ -53,7 +55,7 @@ while i < len(sys.argv):
     manifest = manifest.replace("#<mpiJobName>", mpiJobName)
 
     # Pass name to file for monitoring mpijob later:
-    with open("./etc/mpiJobName", "w") as jN:
+    with open("./mpiJobName", "w") as jN:
       jN.write(mpiJobName)
     i += 2
 
@@ -85,14 +87,49 @@ while i < len(sys.argv):
     openmOptions.append(sys.argv[i+1])
     i += 2
 
+    if re.match("^-OpenM.RunName$", sys.argv[i]):
+      #print(sys.argv[i+1])
+      runName = sys.argv[i+1]
+
+  # KLW 2024-01-22 #get dbPath
+  elif (i + 1 < len(sys.argv) and re.match("^-dbPath$", sys.argv[i])): 
+  #and re.match("[a-zA-Z0-9_/\.-]+", sys.argv[i+1])):
+    print("HERE!!!")
+    dbPath = sys.argv[i+1]
+    if not os.path.isfile(dbPath):
+        exit()
+    i += 2
+      
   # Unrecognized command line options:
   else:
     unrecognized += f"{sys.argv[i]}\n"
     i += 1
 
 # Write any unrecognized options to file for debugging:
-with open("./etc/unrecognizedCmdLineOptions", "w") as u:
+with open("./unrecognizedCmdLineOptions", "w") as u:
   u.write(unrecognized)
+
+
+
+#KLW 22-01-2024 Isolate sqlite dbfile by making a copy 
+#https://github.com/StatCan/openmpp/issues/31
+
+#copy database
+dbDir  = os.path.dirname(dbPath)
+dbName = os.path.basename(dbPath)
+fext = os.path.splitext(dbPath)[1]
+ndbName = runName+fext
+    
+ndbPath = os.path.join(dbDir, ndbName)
+      
+cfcmd = f'cp "{dbPath}" "{ndbPath}"'
+os.system(cfcmd)
+#print(cfcmd)
+
+#openmOptions.append(sys.argv[i+1]) # add OpenM.DbPath 
+openmOptions.append("-OpenM.DbPath")
+openmOptions.append(ndbPath)
+#print(openmOptions)
 
 # Compose bash arguments and replace placeholder in mpijob template:
 bashArguments = f"ulimit -s 63356 && {modelExecutable} {' '.join(openmOptions)}"
