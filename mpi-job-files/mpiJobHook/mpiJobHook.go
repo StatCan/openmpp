@@ -12,15 +12,17 @@ import (
     "time"
     "context"
     "strings"
-	"k8s.io/client-go/rest"
+
+    "k8s.io/client-go/rest"
 	"k8s.io/client-go/kubernetes"
     "k8s.io/apimachinery/pkg/api/resource"
     core "k8s.io/api/core/v1"
     meta "k8s.io/apimachinery/pkg/apis/meta/v1"
+
     kubeflow "github.com/kubeflow/training-operator/pkg/apis/kubeflow.org/v1"
 )
 
-// Some other imports from go-client examples. 
+// Some other imports from the go-client examples project. 
 // We'll add to imports block if/when need anything from these.
 // "k8s.io/apimachinery/pkg/api/errors"
 // _ "k8s.io/client-go/plugin/pkg/client/auth"
@@ -41,8 +43,7 @@ import (
 //  Env       map[string]string // environment variables to run the model  
 
 
-// Will make a simple test harness for the handler and exploration of the rest apis.
-// Check if there are any mandatory arguments for main functions.
+// Will make a simple test harness for the handler and exploration of how to use clientset objects:
 func main () {
     // Create in-cluster configuration object:
 	config, err := rest.InClusterConfig()
@@ -76,7 +77,7 @@ func main () {
     // Will need to formulate something analogous to this but for the mpijobs api endpoint: 
 	// pods, err := clientset.CoreV1().Pods("").List(context.TODO(), meta.ListOptions{})
 
-    // clientset.KubeflowV1().mpiJobs("").List(context.TODO(), meta.ListOptions{})
+    // clientset.KubeflowV1().MPIJobs("").List(context.TODO(), meta.ListOptions{})
 
     // We could pass a unidirectional signal argument as an additional argument and use it to
     // signal an abort command if/when required.
