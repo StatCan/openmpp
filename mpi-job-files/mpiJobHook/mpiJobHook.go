@@ -6,17 +6,17 @@
 package main //mpiJob
 
 import (
-    "os",
-    "fmt",
-    "path",
-    "time",
-    "context",
-    "strings",
-	"k8s.io/client-go/rest",
-	"k8s.io/client-go/kubernetes",
-    "k8s.io/apimachinery/pkg/api/resource",
-    core "k8s.io/api/core/v1",
-    meta "k8s.io/apimachinery/pkg/apis/meta/v1",
+    "os"
+    "fmt"
+    "path"
+    "time"
+    "context"
+    "strings"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/kubernetes"
+    "k8s.io/apimachinery/pkg/api/resource"
+    core "k8s.io/api/core/v1"
+    meta "k8s.io/apimachinery/pkg/apis/meta/v1"
     kubeflow "github.com/kubeflow/training-operator/pkg/apis/kubeflow.org/v1"
 )
 
