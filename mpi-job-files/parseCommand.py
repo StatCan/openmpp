@@ -56,7 +56,7 @@ while i < len(sys.argv):
     manifest = manifest.replace("#<mpiJobName>", mpiJobName)
 
     # Pass name to file for monitoring mpijob later:
-    with open("./mpiJobName", "w") as jN:
+    with open("./etc/mpiJobName", "w") as jN:
       jN.write(mpiJobName)
     i += 2
 
@@ -95,7 +95,7 @@ while i < len(sys.argv):
   # KLW 2024-01-22 #get dbPath
   elif (i + 1 < len(sys.argv) and re.match("^-dbPath$", sys.argv[i])): 
   #and re.match("[a-zA-Z0-9_/\.-]+", sys.argv[i+1])):
-    print("HERE!!!")
+    #print("HERE!!!")
     dbPath = sys.argv[i+1]
     if not os.path.isfile(dbPath):
         exit()
@@ -107,7 +107,7 @@ while i < len(sys.argv):
     i += 1
 
 # Write any unrecognized options to file for debugging:
-with open("./unrecognizedCmdLineOptions", "w") as u:
+with open("./etc/unrecognizedCmdLineOptions", "w") as u:
   u.write(unrecognized)
 
 
