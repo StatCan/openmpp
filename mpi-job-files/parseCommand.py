@@ -8,8 +8,8 @@ from pathlib import Path
 # /opt/openmpp/<openmpp-root-dir>/
 
 # Get directory where model executables are stored:
-with open("./etc/oms_model_dir") as mD:
-  modelBinsDir = os.path.join(mD.read().strip("\n"), "bin".strip("\n"))
+with open("./etc/oms_model_dir") as md:
+  modelDir = md.read().strip("\n")
 
 # Load manifest template contents:
 with open("./etc/MPIJobTemplate.yaml") as template:
@@ -21,7 +21,7 @@ with open("./etc/inputArguments", "w") as inputArgs:
 
 with open("/etc/hostname") as nN:
   notebookName = nN.read()
-
+=[]
 # Save unrecognized command line options to file for debugging:
 unrecognized = ""
 
@@ -36,17 +36,19 @@ manifest = manifest.replace("#<mpirunOption>", \
 #These variables need to be scoped outside of the while loop:
 openmOptions = []
 modelExecutable = ""
+modelName = ""
 
 # The remaining manifest values come from command line options passed by oms:
 i = 1
 while i < len(sys.argv):
   if (i + 1 < len(sys.argv) and re.match("^-modelName$", sys.argv[i])):
     # Construct fully qualified model executable name:
-    modelExecutable = '_'.join([os.path.join(modelBinsDir, sys.argv[i+1]), "mpi"])
+    modelName = sys.argv[i+1]
+    modelExecutable = '_'.join([os.path.join(modelBinsDir, modelName), "mpi"])
 
     # KLW 16-01-2024 https://github.com/StatCan/openmpp/issues/51
     if not os.path.isfile(modelExecutable):
-        exit()
+        sys.exit("Model %s not found in path %s", ())
       
     # Enter unique mpijob name:
     mpiJobName = f"{sys.argv[i+1]}-{str(time()).replace('.', '-')}".lower()
