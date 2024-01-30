@@ -2,17 +2,20 @@
 // Accesses the kubernetes api endpoint for mpijobs, requests new mpijob, relays log information from the
 // launcher pod as the job is running, and responds to an abort request if it is relayed by the web service.
 
-package mpiJob
+package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path"
+	"strconv"
 	"strings"
 	"time"
 
 	core "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
@@ -42,37 +45,34 @@ import (
 
 // Will make a simple test harness for the handler and exploration of how to use clientset objects:
 func main() {
-	// Create in-cluster configuration object:
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		panic(err.Error())
+	// First we want to confirm that the mpiJobTemplate gets formulated.
+	// Set some sample argument values here:
+	modelName := "testing_mpi"
+	exeStem := "testing"
+	dir := "/buckets/aaw-unclassified/models"
+	binDir := path.Join(dir, "bin")
+	dbPath := ""
+	hostFile := ""
+	var mpiNp int32 = 4
+	args := []string{
+		"-OpenM.SubValues",
+		"8",
+		"-OpenM.Threads",
+		"16",
+		"-OpenM.LogToFile",
 	}
-	// Obtain the clientset from cluster:
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		panic(err.Error())
+	env := map[string]string{
+		"SAMPLE_ENV": "VALUE",
 	}
 
-	notMain()
-	// First we just want to figure out how to submit a single mpi job.
-	// So let's set some sample values here:
-	// modelName :=
-	// dir :=
-	// binDir :=
-	// dbPath :=
-	// hostFile :=
-	// mpiNp := 4
-	// args := string[]{ // Find some samples, I don't remember which options were key.
-	//     "-OpenM. ": ,
-	//     "-OpenM. ": ,
-	//     "-OpenM. ":
-	// }
+	// Invoke using the sample arguments defined above and check what the json output looks like:
+	Handler(modelName, exeStem, dir, binDir, dbPath, hostFile, mpiNp, args, env)
 
-	// Invoke Handler in the same way that oms invokes the goroutine for the ExecCommand thing.
-	//go Handler(/* Could use hard-coded arguments for now */)
+	// Next we want to test basic connectivity to cluster and if we can
+	// query one of the standard resource endpoints:
+	simple()
 
-	// Handler(modelName, exeStem, dir, binDir, dbPath, hostFile, mpiNp, args, env)
-
+	// Next we want to figure out how to submit an mpi job to the appropriate api enpoint.
 	// Will need to formulate something analogous to this but for the mpijobs api endpoint:
 	// pods, err := clientset.CoreV1().Pods("").List(context.TODO(), meta.ListOptions{})
 
@@ -87,10 +87,10 @@ func main() {
 	os.Exit(0)
 }
 
-func Handler(modelName, exeStem, dir, binDir, dbPath, hostFile string, mpiNp int, args []string, env map[string]string) /*no obvious return value*/ {
+func Handler(modelName, exeStem, dir, binDir, dbPath, hostFile string, mpiNp int32, args []string, env map[string]string) /*no obvious return value*/ {
 
 	// Start off by constructing constituent parts from the bottom up:
-	timeStamp := time.Now().UnixNano()
+	timeStamp := strconv.FormatInt(time.Now().UnixNano(), 10)
 	containerImage := "k8scc01covidacr.azurecr.io/ompp-run-ubuntu:0f80cf47bb5d6f6e025990e511b72be614bbcf7c"
 
 	//Need to join modelName with binDir and append _mpi:
@@ -120,24 +120,24 @@ func Handler(modelName, exeStem, dir, binDir, dbPath, hostFile string, mpiNp int
 
 	// Node resource limits:
 	resourceLimits := core.ResourceList{
-		ResourceCPU:    cpuResourceLimit,
-		ResourceMemory: memoryLimit,
+		core.ResourceCPU:    *cpuResourceLimit,
+		core.ResourceMemory: *memoryLimit,
 	}
 
 	// Launcher resource requests:
 	launcherResourceRequests := core.ResourceList{
-		ResourceCPU:    cpuLauncherRequest,
-		ResourceMemory: memoryLauncherRequest,
+		core.ResourceCPU:    *cpuLauncherRequest,
+		core.ResourceMemory: *memoryLauncherRequest,
 	}
 
-	// Worker resource requests:
+	// Worker core requests:
 	workerResourceRequests := core.ResourceList{
-		ResourceCPU:    cpuWorkerReqest,
-		ResourceMemory: memoryWorkerRequest,
+		core.ResourceCPU:    *cpuWorkerRequest,
+		core.ResourceMemory: *memoryWorkerRequest,
 	}
 
 	// Launcher resource requirements:
-	launcherResoureRequirements := core.ResourceRequirements{
+	launcherResourceRequirements := core.ResourceRequirements{
 		Limits:   resourceLimits,
 		Requests: launcherResourceRequests,
 	}
@@ -154,6 +154,7 @@ func Handler(modelName, exeStem, dir, binDir, dbPath, hostFile string, mpiNp int
 		Name:      mainContainerName,
 		Image:     containerImage,
 		Command:   containerCommand,
+		Args:      containerArguments,
 		Resources: launcherResourceRequirements,
 	}
 
@@ -183,60 +184,73 @@ func Handler(modelName, exeStem, dir, binDir, dbPath, hostFile string, mpiNp int
 		Labels: labels,
 	}
 
-	podTypeMetadata := meta.TypeMeta{
-		Kind:    "PodTemplate",
-		Version: "v1",
-	}
+	//podTypeMetadata := meta.TypeMeta{
+	//	Kind:       "PodTemplate",
+	//	APIVersion: "v1",
+	//}
 
-	// Next is pod template specs:
-	laucherPodTemplate := core.PodTemplateSpec{
-		TypeMeta:   podTypeMetadata,
+	// Pod template specifications:
+	launcherPodTemplateSpec := core.PodTemplateSpec{
 		ObjectMeta: podObjectMetadata,
 		Spec:       launcherPodSpec,
 	}
 
-	workerPodTemplate := core.PodTemplateSpec{
-		TypeMeta:   podTypeMetadata,
+	workerPodTemplateSpec := core.PodTemplateSpec{
 		ObjectMeta: podObjectMetadata,
 		Spec:       workerPodSpec,
 	}
 
-	one := 1
+	var one int32 = 1
 	// Then replica specs:
-	launcheReplicaSpec := kubeflow.ReplicaSpec{
+	launcherReplicaSpec := kubeflow.ReplicaSpec{
 		Replicas: &one,
-		Template: launcherPodTemplate,
+		Template: launcherPodTemplateSpec,
 	}
 
 	workerReplicaSpec := kubeflow.ReplicaSpec{
 		Replicas: &mpiNp,
-		Template: workerPodTemplate,
+		Template: workerPodTemplateSpec,
 	}
 
-	two := 2
+	var two int32 = 2
+	var cleanPodPolicy kubeflow.CleanPodPolicy = kubeflow.CleanPodPolicyRunning
 	// Finally the mpijob spec:
 	mpiJobSpec := kubeflow.MPIJobSpec{
 		SlotsPerWorker: &two, // probably 2 given Pat's comments about typical nodes used in the cluster.
 
-		// This one is a map from the set of replica types {Launcher, Worker, ... } to ReplicaSpecs.
+		// This one is a map from the set of replica types {Launcher, Worker, ... } to *ReplicaSpecs.
 		// We don't need to provide ReplicaSpecs for any replica types other than Launcher and Worker.
 		// The reason they have these other ones is for specifying different types of distributed workloads.
-		MPIReplicaSpecs: map[kubeflow.ReplicaType]kubeflow.ReplicaSpec{
-			"Launcher": launcherReplicaSpec,
-			"Worker":   workerReplicaSpec,
+		MPIReplicaSpecs: map[kubeflow.ReplicaType]*kubeflow.ReplicaSpec{
+			"Launcher": &launcherReplicaSpec,
+			"Worker":   &workerReplicaSpec,
 		},
 
 		MainContainer:  mainContainerName,
-		CleanPodPolicy: &kubeflow.CleanPodPolicyRunning,
+		CleanPodPolicy: &cleanPodPolicy,
 	}
+
+	output, _ := json.Marshal(mpiJobSpec)
+	fmt.Printf(string(output[:]))
 }
 
 // Leaving this here as reference for how the clientset object is interacted with.
-func notMain() {
+func simple() {
+	// Create in-cluster configuration object:
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err.Error())
+	}
+	// Obtain the clientset from cluster:
+	clientSet, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+
 	for {
 		// get pods in all the namespaces by omitting namespace
 		// Or specify namespace to get pods in particular namespace
-		pods, err := clientset.CoreV1().Pods("").List(context.TODO(), meta.ListOptions{})
+		pods, err := clientSet.CoreV1().Pods("").List(context.TODO(), meta.ListOptions{})
 		if err != nil {
 			panic(err.Error())
 		}
@@ -245,7 +259,7 @@ func notMain() {
 		// Examples for error handling:
 		// - Use helper functions e.g. errors.IsNotFound()
 		// - And/or cast to StatusError and use its properties like e.g. ErrStatus.Message
-		_, err = clientset.CoreV1().Pods("default").Get(context.TODO(), "example-xxxxx", meta.GetOptions{})
+		_, err = clientSet.CoreV1().Pods("default").Get(context.TODO(), "example-xxxxx", meta.GetOptions{})
 		if errors.IsNotFound(err) {
 			fmt.Printf("Pod example-xxxxx not found in default namespace\n")
 		} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
