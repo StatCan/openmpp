@@ -6,7 +6,8 @@ metadata:
   labels:
     notebook-name: #<notebookName>
 spec:
-  #slotsPerWorker: Tensorflow example sets this attribute, but Pat's example template doesn't.
+  # Experimenting with a hard-coded value of 2 that should fit our standard 2-core cluster nodes.
+  slotsPerWorker: 2
   runPolicy:
     cleanPodPolicy: Running
   mpiReplicaSpecs:
