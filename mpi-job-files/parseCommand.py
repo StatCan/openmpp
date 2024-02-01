@@ -9,15 +9,19 @@ import subprocess
 # /opt/openmpp/<openmpp-root-dir>/
 
 # Get directory where model executables are stored:
-with open("./etc/oms_model_dir") as mD:
+with open("./oms_model_dir") as mD:
   modelBinsDir = os.path.join(mD.read().strip("\n"), "bin".strip("\n"))
 
+#KLW model isolation test
+#print("##############################")
+#print(modelBinsDir)
+
 # Load manifest template contents:
-with open("./etc/MPIJobTemplate.yaml") as template:
+with open("./MPIJobTemplate.yaml") as template:
   manifest = template.read()
 
 # Save input arguments to file for debugging:
-with open("./etc/inputArguments", "w") as inputArgs:
+with open("./inputArguments", "w") as inputArgs:
   inputArgs.write(' '.join(sys.argv))
 
 #no dot!
@@ -56,7 +60,7 @@ while i < len(sys.argv):
     manifest = manifest.replace("#<mpiJobName>", mpiJobName)
 
     # Pass name to file for monitoring mpijob later:
-    with open("./etc/mpiJobName", "w") as jN:
+    with open("./mpiJobName", "w") as jN:
       jN.write(mpiJobName)
     i += 2
 
@@ -86,16 +90,16 @@ while i < len(sys.argv):
   and re.match("[a-zA-Z0-9_/\.-]+", sys.argv[i+1])):
     openmOptions.append(sys.argv[i])
     openmOptions.append(sys.argv[i+1])
-    i += 2
 
     if re.match("^-OpenM.RunName$", sys.argv[i]):
       #print(sys.argv[i+1])
       runName = sys.argv[i+1]
 
+    i += 2
+    
   # KLW 2024-01-22 #get dbPath
   elif (i + 1 < len(sys.argv) and re.match("^-dbPath$", sys.argv[i])): 
   #and re.match("[a-zA-Z0-9_/\.-]+", sys.argv[i+1])):
-    #print("HERE!!!")
     dbPath = sys.argv[i+1]
     if not os.path.isfile(dbPath):
         exit()
@@ -107,7 +111,7 @@ while i < len(sys.argv):
     i += 1
 
 # Write any unrecognized options to file for debugging:
-with open("./etc/unrecognizedCmdLineOptions", "w") as u:
+with open("./unrecognizedCmdLineOptions", "w") as u:
   u.write(unrecognized)
 
 
@@ -119,17 +123,35 @@ with open("./etc/unrecognizedCmdLineOptions", "w") as u:
 dbDir  = os.path.dirname(dbPath)
 dbName = os.path.basename(dbPath)
 fext = os.path.splitext(dbPath)[1]
+
 ndbName = runName+fext
-    
+ndirName = dbDir+"/"+runName
+ndirName = os.path.normpath(ndirName)
+
+#print(ndirName)
+
+mdcmd = f'mkdir "{ndirName}"'
+os.system(mdcmd)
+#print(mdcmd)
+
 ndbPath = os.path.join(dbDir, ndbName)
       
-cfcmd = f'cp "{dbPath}" "{ndbPath}"'
+cfcmd = f'cp "{dbPath}" "{ndirName}"'
 os.system(cfcmd)
 #print(cfcmd)
 
+cecmd = f'cp "{modelExecutable}" "{ndirName}"'
+os.system(cecmd)
+#print(cecmd)
+
+# switch modelExecutable to point to one in new dir
+modelExecutable = '_'.join([os.path.join(ndirName, modelName), "mpi"])
+
+#print(modelExecutable)
+
 #openmOptions.append(sys.argv[i+1]) # add OpenM.DbPath 
-openmOptions.append("-OpenM.DbPath")
-openmOptions.append(ndbPath)
+#openmOptions.append("-OpenM.DbPath")
+#openmOptions.append(ndbPath)
 #print(openmOptions)
 
 # Compose bash arguments and replace placeholder in mpijob template:
@@ -137,4 +159,5 @@ bashArguments = f"ulimit -s 63356 && {modelExecutable} {' '.join(openmOptions)}"
 manifest = manifest.replace("#<bashArguments>", f'- "{bashArguments}"')
 
 # Print manifest to standard output:
+#print("@@@@@@@@@@@@@@@@@@@@@@@@@@")
 print(manifest)
