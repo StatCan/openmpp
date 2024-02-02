@@ -6,10 +6,11 @@ package main
 
 import (
 	"context"
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"os"
 	"path"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -43,34 +44,49 @@ import (
 //  Args      []string          // model command line arguments
 //  Env       map[string]string // environment variables to run the model
 
-// Will make a simple test harness for the handler and exploration of how to use clientset objects:
+// Authenticate into cluster. Then run a simple REPL and experiment
+// with querying the Clientset for various resource types:
 func main() {
-	// First we want to confirm that the mpiJobTemplate gets formulated.
-	// Set some sample argument values here:
-	modelName := "testing_mpi"
-	exeStem := "testing"
-	dir := "/buckets/aaw-unclassified/models"
-	binDir := path.Join(dir, "bin")
-	dbPath := ""
-	hostFile := ""
-	var mpiNp int32 = 4
-	args := []string{
-		"-OpenM.SubValues",
-		"8",
-		"-OpenM.Threads",
-		"16",
-		"-OpenM.LogToFile",
+
+	// Create in-cluster configuration object:
+	config, err := rest.InClusterConfig()
+	if err != nil {
+		panic(err.Error())
 	}
-	env := map[string]string{
-		"SAMPLE_ENV": "VALUE",
+	// Obtain the clientset from cluster:
+	clientSet, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
 	}
 
+	discoverApis(clientSet, "jacek-dev")
+
+	// First we want to confirm that the mpiJobTemplate gets formulated.
+	// Set some sample argument values here:
+	// modelName := "testing_mpi"
+	// exeStem := "testing"
+	// dir := "/buckets/aaw-unclassified/models"
+	// binDir := path.Join(dir, "bin")
+	// dbPath := ""
+	// hostFile := ""
+	// var mpiNp int32 = 4
+	// args := []string{
+	// 	"-OpenM.SubValues",
+	// 	"8",
+	// 	"-OpenM.Threads",
+	// 	"16",
+	// 	"-OpenM.LogToFile",
+	// }
+	// env := map[string]string{
+	// 	"SAMPLE_ENV": "VALUE",
+	// }
+
 	// Invoke using the sample arguments defined above and check what the json output looks like:
-	Handler(modelName, exeStem, dir, binDir, dbPath, hostFile, mpiNp, args, env)
+	//jobSpec := mpiJobSpec(modelName, exeStem, dir, binDir, dbPath, hostFile, mpiNp, args, env)
 
 	// Next we want to test basic connectivity to cluster and if we can
 	// query one of the standard resource endpoints:
-	simple()
+	//showPods()
 
 	// Next we want to figure out how to submit an mpi job to the appropriate api enpoint.
 	// Will need to formulate something analogous to this but for the mpijobs api endpoint:
@@ -87,7 +103,37 @@ func main() {
 	os.Exit(0)
 }
 
-func Handler(modelName, exeStem, dir, binDir, dbPath, hostFile string, mpiNp int32, args []string, env map[string]string) /*no obvious return value*/ {
+func discoverApis(cs *kubernetes.Clientset, namespace string) {
+	fmt.Println("Methods discovered on clientset in ", namespace, ":")
+	// Create the meta-variable to examine the clientset variable.
+	cst := reflect.TypeOf(cs)
+	for i := 0; i <= cst.NumMethod(); i++ {
+		method := cst.Method(i)
+		name := method.Name
+		tp := method.Type
+		fmt.Println("Name: ", name)
+		fmt.Println("Type: ", tp)
+		fmt.Println()
+	}
+}
+
+// Might want to define a structure for the arguments coming from openm web service as that will
+// let us provide default values for some fields, and refactor mpiJobSpec below to accept the
+// structure instead.
+type mpiJobArgs struct {
+	modelName string
+	exeStem   string
+	dir       string
+	binDir    string
+	dbPath    string
+	hostFile  string
+	mpiNp     int32
+	args      []string
+	env       map[string]string
+}
+
+// Generate mpijob spec based on arguments coming from openm web service and cluster configuration:
+func mpiJobSpec(modelName, exeStem, dir, binDir, dbPath, hostFile string, mpiNp int32, args []string, env map[string]string) kubeflow.MPIJobSpec {
 
 	// Start off by constructing constituent parts from the bottom up:
 	timeStamp := strconv.FormatInt(time.Now().UnixNano(), 10)
@@ -229,47 +275,32 @@ func Handler(modelName, exeStem, dir, binDir, dbPath, hostFile string, mpiNp int
 		MainContainer:  mainContainerName,
 		CleanPodPolicy: &cleanPodPolicy,
 	}
-
-	output, _ := json.Marshal(mpiJobSpec)
-	fmt.Printf(string(output[:]))
+	return mpiJobSpec
 }
 
-// Leaving this here as reference for how the clientset object is interacted with.
-func simple() {
-	// Create in-cluster configuration object:
-	config, err := rest.InClusterConfig()
+// Function based on go-client example code that queries the kubernets api for pod info:
+func showPods(cs *kubernetes.Clientset, namespace string) {
+	// Specify namespace to get pods in particular namespace
+	// or omit parameter to search all namespaces.
+	pods, err := cs.CoreV1().Pods(namespace).List(context.TODO(), meta.ListOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
-	// Obtain the clientset from cluster:
-	clientSet, err := kubernetes.NewForConfig(config)
-	if err != nil {
+	fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
+
+	// Use some reflection functions to explore the pods variable:
+
+	// Examples for error handling:
+	// - Use helper functions e.g. errors.IsNotFound()
+	// - And/or cast to StatusError and use its properties like e.g. ErrStatus.Message
+	_, err = cs.CoreV1().Pods("default").Get(context.TODO(), "example-xxxxx", meta.GetOptions{})
+	if errors.IsNotFound(err) {
+		fmt.Printf("Pod example-xxxxx not found in default namespace\n")
+	} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
+		fmt.Printf("Error getting pod %v\n", statusError.ErrStatus.Message)
+	} else if err != nil {
 		panic(err.Error())
-	}
-
-	for {
-		// get pods in all the namespaces by omitting namespace
-		// Or specify namespace to get pods in particular namespace
-		pods, err := clientSet.CoreV1().Pods("").List(context.TODO(), meta.ListOptions{})
-		if err != nil {
-			panic(err.Error())
-		}
-		fmt.Printf("There are %d pods in the cluster\n", len(pods.Items))
-
-		// Examples for error handling:
-		// - Use helper functions e.g. errors.IsNotFound()
-		// - And/or cast to StatusError and use its properties like e.g. ErrStatus.Message
-		_, err = clientSet.CoreV1().Pods("default").Get(context.TODO(), "example-xxxxx", meta.GetOptions{})
-		if errors.IsNotFound(err) {
-			fmt.Printf("Pod example-xxxxx not found in default namespace\n")
-		} else if statusError, isStatus := err.(*errors.StatusError); isStatus {
-			fmt.Printf("Error getting pod %v\n", statusError.ErrStatus.Message)
-		} else if err != nil {
-			panic(err.Error())
-		} else {
-			fmt.Printf("Found example-xxxxx pod in default namespace\n")
-		}
-
-		time.Sleep(10 * time.Second)
+	} else {
+		fmt.Printf("Found example-xxxxx pod in default namespace\n")
 	}
 }
