@@ -8,7 +8,7 @@ manifest=$(python3 ./bin/parseCommand.py "$@")
 # KLW 16-01-2024 https://github.com/StatCan/openmpp/issues/51
 if [[ -z $manifest ]]; then
   echo "ERROR: path to MPI model executable does not exist"
-  echo "File $manifest not found"
+  echo "Manifest File not found"
   exit 1
 fi
 
