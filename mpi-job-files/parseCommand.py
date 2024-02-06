@@ -78,6 +78,29 @@ while i < len(sys.argv):
       f"- -x\n{12*' '}- {sys.argv[i+1]}\n{12*' '}#<mpirunOption>")
     i += 2
 
+  # OpenM options and arguments exception:
+  # KLW 2024-02-06  https://github.com/StatCan/openmpp/issues/60
+  # There is a bug in OpenM in regard to the -OpenM.NotOnRoot argument.  
+  # The Value is suppose to be true or false, but is missing when false
+  elif (i + 1 < len(sys.argv) and re.match("^-OpenM.NotOnRoot$", sys.argv[i]):
+    if (re.match("^true$", sys.argv[i+1]) or re.match("^false$", sys.argv[i+1]) ):
+      openmOptions.append(sys.argv[i])
+      openmOptions.append(sys.argv[i+1])
+      i += 2
+    else:
+      openmOptions.append(sys.argv[i])
+      openmOptions.append("false")
+      i += 1
+
+  # ini options and arguments:
+  # KLW 2024-02-06 Explicit handling of the -ini argument
+  elif (i + 1 < len(sys.argv) and re.match("^-ini$", sys.argv[i]) \
+  and re.match("[a-zA-Z0-9_/\.-]+", sys.argv[i+1])):
+    openmOptions.append(sys.argv[i])
+    openmOptions.append(sys.argv[i+1])
+    i += 2
+    
+  
   # OpenM options and arguments:
   elif (i + 1 < len(sys.argv) and re.match("^-OpenM\.", sys.argv[i]) \
   and re.match("[a-zA-Z0-9_/\.-]+", sys.argv[i+1])):
