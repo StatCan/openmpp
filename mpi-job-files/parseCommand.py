@@ -82,7 +82,7 @@ while i < len(sys.argv):
   # KLW 2024-02-06  https://github.com/StatCan/openmpp/issues/60
   # There is a bug in OpenM in regard to the -OpenM.NotOnRoot argument.  
   # The Value is suppose to be true or false, but is missing when false
-  elif (i + 1 < len(sys.argv) and re.match("^-OpenM.NotOnRoot$", sys.argv[i]):
+  elif (i + 1 < len(sys.argv) and re.match("^-OpenM.NotOnRoot$", sys.argv[i])):
     if (re.match("^true$", sys.argv[i+1]) or re.match("^false$", sys.argv[i+1]) ):
       openmOptions.append(sys.argv[i])
       openmOptions.append(sys.argv[i+1])
