@@ -89,7 +89,7 @@ while i < len(sys.argv):
       i += 2
     else:
       openmOptions.append(sys.argv[i])
-      openmOptions.append("false")
+      openmOptions.append("true") #KLW 2024-02-06 OpenM docs say this value should be 'true'
       i += 1
 
   # ini options and arguments:
