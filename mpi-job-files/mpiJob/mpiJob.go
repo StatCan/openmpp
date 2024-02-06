@@ -104,16 +104,57 @@ func main() {
 }
 
 func discoverApis(cs *kubernetes.Clientset, namespace string) {
-	fmt.Println("Methods discovered on clientset in ", namespace, ":")
-	// Create the meta-variable to examine the clientset variable.
+	//fmt.Println("Methods discovered on clientset in ", namespace, ":")
+
+    // Create the meta-variable to examine the clientset variable.
 	cst := reflect.TypeOf(cs)
-	for i := 0; i <= cst.NumMethod(); i++ {
-		method := cst.Method(i)
-		name := method.Name
-		tp := method.Type
-		fmt.Println("Name: ", name)
-		fmt.Println("Type: ", tp)
-		fmt.Println()
+    fmt.Println("The underlying type of cs: ", cst.Name())
+
+    //for i := 0; i < cst.NumMethod(); i++ {
+	//	method := cst.Method(i)
+	//	name := method.Name
+	//	tp := method.Type
+	//	fmt.Println("Name: ", name)
+	//	fmt.Println("Type: ", tp)
+	//	fmt.Println()
+	//}
+
+    // Try to call several of the most promising ones and repeat the method discovery process:
+
+    extensionsV1beta1 := cs.ExtensionsV1beta1() // Do I need a type assertion here before invoking this?
+    extensionsV1beta1Type := reflect.TypeOf(extensionsV1beta1)
+    fmt.Println("Method set of the extensionsV1beta1 client subset:")
+    for i := 0; i < extensionsV1beta1Type.NumMethod(); i++ {
+        method := extensionsV1beta1Type.Method(i)
+        name := method.Name
+        tp := method.Type
+        fmt.Println("Name: ", name)
+        fmt.Println("Type: ", tp)
+        fmt.Println()
+	}
+
+    restClient := cs.RESTClient() // Same thing, I may need a type assertion.
+    restClientType := reflect.TypeOf(restClient)
+    fmt.Println("Method set of the RESTClient subset:")
+    for i := 0; i < extensionsV1beta1Type.NumMethod(); i++ {
+        method := extensionsV1beta1Type.Method(i)
+        name := method.Name
+        tp := method.Type
+        fmt.Println("Name: ", name)
+        fmt.Println("Type: ", tp)
+        fmt.Println()
+	}
+
+    discoveryV1beta1 := cs.DiscoveryV1beta1() // Same thing, type assertion may be needed.
+    discoveryV1beta1Type := reflect.TypeOf(discoveryV1beta1)
+    fmt.Println("Method set of the discoveryV1beta1 client subset:")
+    for i := 0; i < discoveryV1beta1Type.NumMethod(); i++ {
+        method := discoveryV1beta1Type.Method(i)
+        name := method.Name
+        tp := method.Type
+        fmt.Println("Name: ", name)
+        fmt.Println("Type: ", tp)
+        fmt.Println()
 	}
 }
 
