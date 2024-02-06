@@ -136,8 +136,8 @@ func discoverApis(cs *kubernetes.Clientset, namespace string) {
     restClient := cs.RESTClient() // Same thing, I may need a type assertion.
     restClientType := reflect.TypeOf(restClient)
     fmt.Println("Method set of the RESTClient subset:")
-    for i := 0; i < extensionsV1beta1Type.NumMethod(); i++ {
-        method := extensionsV1beta1Type.Method(i)
+    for i := 0; i < restClientType.NumMethod(); i++ {
+        method := restClientType.Method(i)
         name := method.Name
         tp := method.Type
         fmt.Println("Name: ", name)
