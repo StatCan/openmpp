@@ -3,17 +3,17 @@
 # Working directory is assumed to be: /opt/openmpp/<openmpp-root-dir>/
 
 # Parse openm web service arguments and create manifest instance:
-manifest=$(python3 ./bin/parseCommand.py "$@")
+manifest=$(python3 ./parseCommand02.py "$@")
 
 # KLW 16-01-2024 https://github.com/StatCan/openmpp/issues/51
-if [[ -z $manifest ]]; then
+if [ $? -ne 0 ]; then
   echo "ERROR: path to MPI model executable does not exist"
-  echo "Did you compile it?"
+  echo "$manifest"
   exit 1
 fi
 
 # Create a copy of manifest for trouble-shooting:
-echo "$manifest" > "./etc/MPIJob-$ManifestInstance.yaml"
+echo "$manifest" > "./etc/MPIJob-ManifestInstance.yaml"
 
 # Send manifest to standard input of kubectl:
 kubectl apply -f - <<< "$manifest"
