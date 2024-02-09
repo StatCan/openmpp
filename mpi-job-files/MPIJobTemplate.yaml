@@ -56,7 +56,16 @@ spec:
                 requests:
                   cpu: '2'
                   memory: 1Gi
-
-            # In the tensorflow example there are volume and volume mount definitions for the worker pods.
-            # I don't think this is necessary if the container images used in the worker pod definitions
-            # have COPY directives that populate the ephemeral filesystem with the required files.
+            volumeMounts:
+            - mountPath: /home/jovyan
+              name: jlab-volume
+            - mountPath: /home/jovyan/mpi-test
+              name: mpi-test
+          volumes:
+            - name: jlab-volume
+              persistentVolumeClaim:
+                claimName: jlab-volume
+            - name: mpi-test
+              persistentVolumeClaim:
+                claimName: mpi-test
+          
