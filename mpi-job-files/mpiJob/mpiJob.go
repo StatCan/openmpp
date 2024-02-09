@@ -6,7 +6,6 @@ package main
 
 import (
 	"context"
-	//"encoding/json"
 	"fmt"
 	"os"
 	"path"
@@ -22,16 +21,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
-	kubeflow "github.com/kubeflow/training-operator/pkg/apis/kubeflow.org/v1"
+	kubeAPI "github.com/kubeflow/training-operator/pkg/apis/kubeflow.org/v1"
+    kubeClient "github.com/kubeflow/training-operator/pkg/client/clientset/versioned/typed/kubeflow.org/v1"
 )
-
-// Some other imports from the go-client examples project.
-// We'll add to imports block if/when need anything from these.
-// "k8s.io/apimachinery/pkg/api/errors"
-// _ "k8s.io/client-go/plugin/pkg/client/auth"
-// _ "k8s.io/client-go/plugin/pkg/client/auth/azure"
-// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
-// _ "k8s.io/client-go/plugin/pkg/client/auth/oidc"
 
 // Arguments that are currently passed via the kubeflow template:
 //  ModelName string            // model name
@@ -44,119 +36,76 @@ import (
 //  Args      []string          // model command line arguments
 //  Env       map[string]string // environment variables to run the model
 
-// Authenticate into cluster. Then run a simple REPL and experiment
-// with querying the Clientset for various resource types:
 func main() {
+	// Set some sample argument values here.
+	modelName := "RiskPaths"
+	exeStem := "RiskPaths"
+	dir := "/home/jovyan/buckets/aaw-unclassified/microsim/models/bin"
+	binDir := "."
+	dbPath := "/home/jovyan/buckets/aaw-unclassified/microsim/models/bin/RiskPaths.sqlite"
+	var mpiNp int32 = 4
+	args := []string{
+        "-OpenM.RunStamp",
+        "2024_02_09_04_08_45_834",
+        "-OpenM.LogToConsole",
+        "true",
+        "-OpenM.LogRank",
+        "true",
+        "-OpenM.MessageLanguage",
+        "en-US",
+        "-OpenM.RunName",
+        "RiskPaths_Default_2024_02_08_23_08_10_047",
+        "-OpenM.SetName"
+        "Default"
+		"-OpenM.SubValues",
+		"32",
+		"-OpenM.Threads",
+		"16",
+	}
+	env := map[string]string{
+		"SAMPLE_ENV": "VALUE",
+	}
 
-	// Create in-cluster configuration object:
+	// Create an MPIJobSpec using the sample arguments defined above.
+	jobSpec := mpiJobSpec(modelName, exeStem, dir, binDir, dbPath, mpiNp, args, env)
+
+    // Validate spec using validation function.
+    err := kubeAPI.ValidateV1MpiJobSpec(jobSpec)
+    if err != nil {
+        panic(err.Error())
+    }
+
+    // Create in-cluster configuration object.
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		panic(err.Error())
 	}
-	// Obtain the clientset from cluster:
+
+    // Obtain clientset from cluster.
 	clientSet, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	discoverApis(clientSet, "jacek-dev")
+    // Obtain client subset containing just the kubeflow based resources.
+    kubeClientSubset, err := kubeClient.NewForConfig(config)
+    if err != nil {
+        panic(err.Error())
+    }
 
-	// First we want to confirm that the mpiJobTemplate gets formulated.
-	// Set some sample argument values here:
-	// modelName := "testing_mpi"
-	// exeStem := "testing"
-	// dir := "/buckets/aaw-unclassified/models"
-	// binDir := path.Join(dir, "bin")
-	// dbPath := ""
-	// hostFile := ""
-	// var mpiNp int32 = 4
-	// args := []string{
-	// 	"-OpenM.SubValues",
-	// 	"8",
-	// 	"-OpenM.Threads",
-	// 	"16",
-	// 	"-OpenM.LogToFile",
-	// }
-	// env := map[string]string{
-	// 	"SAMPLE_ENV": "VALUE",
-	// }
+    // Obtain an interface to the MPIJobs collection for given namespace.
+    mpiJobs := kubeClientSubset.MPIJobs("jacek-dev")
 
-	// Invoke using the sample arguments defined above and check what the json output looks like:
-	//jobSpec := mpiJobSpec(modelName, exeStem, dir, binDir, dbPath, hostFile, mpiNp, args, env)
+    // Now attempt to submit sample MPIJob:
+    func (c *mPIJobs) Get(ctx context.Context, name string, options metav1.GetOptions) (result *v1.MPIJob, err error) 
 
-	// Next we want to test basic connectivity to cluster and if we can
-	// query one of the standard resource endpoints:
-	//showPods()
-
-	// Next we want to figure out how to submit an mpi job to the appropriate api enpoint.
-	// Will need to formulate something analogous to this but for the mpijobs api endpoint:
-	// pods, err := clientset.CoreV1().Pods("").List(context.TODO(), meta.ListOptions{})
-
-	// clientset.KubeflowV1().MPIJobs("").List(context.TODO(), meta.ListOptions{})
-
-	// We could pass a unidirectional signal argument as an additional argument and use it to
-	// signal an abort command if/when required.
-	// Use standard input to send signal to terminate.
+    func (c *mPIJobs) List(ctx context.Context, opts metav1.ListOptions) (result *v1.MPIJobList, err error) {
 
 	// Use os.Exit to terminate the program and return a status code.
 	// In cases of error we will be able to send an error status code that the web service should pick up.
 	os.Exit(0)
 }
 
-func discoverApis(cs *kubernetes.Clientset, namespace string) {
-	//fmt.Println("Methods discovered on clientset in ", namespace, ":")
-
-    // Create the meta-variable to examine the clientset variable.
-	cst := reflect.TypeOf(cs)
-    fmt.Println("The underlying type of cs: ", cst.Name())
-
-    //for i := 0; i < cst.NumMethod(); i++ {
-	//	method := cst.Method(i)
-	//	name := method.Name
-	//	tp := method.Type
-	//	fmt.Println("Name: ", name)
-	//	fmt.Println("Type: ", tp)
-	//	fmt.Println()
-	//}
-
-    // Try to call several of the most promising ones and repeat the method discovery process:
-
-    extensionsV1beta1 := cs.ExtensionsV1beta1() // Do I need a type assertion here before invoking this?
-    extensionsV1beta1Type := reflect.TypeOf(extensionsV1beta1)
-    fmt.Println("Method set of the extensionsV1beta1 client subset:")
-    for i := 0; i < extensionsV1beta1Type.NumMethod(); i++ {
-        method := extensionsV1beta1Type.Method(i)
-        name := method.Name
-        tp := method.Type
-        fmt.Println("Name: ", name)
-        fmt.Println("Type: ", tp)
-        fmt.Println()
-	}
-
-    restClient := cs.RESTClient() // Same thing, I may need a type assertion.
-    restClientType := reflect.TypeOf(restClient)
-    fmt.Println("Method set of the RESTClient subset:")
-    for i := 0; i < restClientType.NumMethod(); i++ {
-        method := restClientType.Method(i)
-        name := method.Name
-        tp := method.Type
-        fmt.Println("Name: ", name)
-        fmt.Println("Type: ", tp)
-        fmt.Println()
-	}
-
-    discoveryV1beta1 := cs.DiscoveryV1beta1() // Same thing, type assertion may be needed.
-    discoveryV1beta1Type := reflect.TypeOf(discoveryV1beta1)
-    fmt.Println("Method set of the discoveryV1beta1 client subset:")
-    for i := 0; i < discoveryV1beta1Type.NumMethod(); i++ {
-        method := discoveryV1beta1Type.Method(i)
-        name := method.Name
-        tp := method.Type
-        fmt.Println("Name: ", name)
-        fmt.Println("Type: ", tp)
-        fmt.Println()
-	}
-}
 
 // Might want to define a structure for the arguments coming from openm web service as that will
 // let us provide default values for some fields, and refactor mpiJobSpec below to accept the
@@ -167,14 +116,13 @@ type mpiJobArgs struct {
 	dir       string
 	binDir    string
 	dbPath    string
-	hostFile  string
 	mpiNp     int32
 	args      []string
 	env       map[string]string
 }
 
 // Generate mpijob spec based on arguments coming from openm web service and cluster configuration:
-func mpiJobSpec(modelName, exeStem, dir, binDir, dbPath, hostFile string, mpiNp int32, args []string, env map[string]string) kubeflow.MPIJobSpec {
+func mpiJobSpec(modelName, exeStem, dir, binDir, dbPath string, mpiNp int32, args []string, env map[string]string) kubeAPI.MPIJobSpec {
 
 	// Start off by constructing constituent parts from the bottom up:
 	timeStamp := strconv.FormatInt(time.Now().UnixNano(), 10)
@@ -289,26 +237,26 @@ func mpiJobSpec(modelName, exeStem, dir, binDir, dbPath, hostFile string, mpiNp 
 
 	var one int32 = 1
 	// Then replica specs:
-	launcherReplicaSpec := kubeflow.ReplicaSpec{
+	launcherReplicaSpec := kubeAPI.ReplicaSpec{
 		Replicas: &one,
 		Template: launcherPodTemplateSpec,
 	}
 
-	workerReplicaSpec := kubeflow.ReplicaSpec{
+	workerReplicaSpec := kubeAPI.ReplicaSpec{
 		Replicas: &mpiNp,
 		Template: workerPodTemplateSpec,
 	}
 
 	var two int32 = 2
-	var cleanPodPolicy kubeflow.CleanPodPolicy = kubeflow.CleanPodPolicyRunning
+	var cleanPodPolicy kubeAPI.CleanPodPolicy = kubeAPI.CleanPodPolicyRunning
 	// Finally the mpijob spec:
-	mpiJobSpec := kubeflow.MPIJobSpec{
+	mpiJobSpec := kubeAPI.MPIJobSpec{
 		SlotsPerWorker: &two, // probably 2 given Pat's comments about typical nodes used in the cluster.
 
 		// This one is a map from the set of replica types {Launcher, Worker, ... } to *ReplicaSpecs.
 		// We don't need to provide ReplicaSpecs for any replica types other than Launcher and Worker.
 		// The reason they have these other ones is for specifying different types of distributed workloads.
-		MPIReplicaSpecs: map[kubeflow.ReplicaType]*kubeflow.ReplicaSpec{
+		MPIReplicaSpecs: map[kubeAPI.ReplicaType]*kubeAPI.ReplicaSpec{
 			"Launcher": &launcherReplicaSpec,
 			"Worker":   &workerReplicaSpec,
 		},
@@ -343,5 +291,85 @@ func showPods(cs *kubernetes.Clientset, namespace string) {
 		panic(err.Error())
 	} else {
 		fmt.Printf("Found example-xxxxx pod in default namespace\n")
+	}
+}
+
+// Modify this to conform to our use case. We'll have already created a clientset.
+// And we will want to use a label selector or name to locate the launcher pod for a given MPIjob.
+func getPodLogs(pod core.Pod) string {
+    podLogOpts := core.PodLogOptions{}
+    config, err := rest.InClusterConfig()
+    if err != nil {
+        return "error in getting config"
+    }
+    // creates the clientset
+    clientset, err := kubernetes.NewForConfig(config)
+    if err != nil {
+        return "error in getting access to K8S"
+    }
+    req := clientset.Core().Pods(pod.Namespace).GetLogs(pod.Name, &podLogOpts)
+    podLogs, err := req.Stream()
+    if err != nil {
+        return "error in opening stream"
+    }
+    defer podLogs.Close()
+
+    buf := new(bytes.Buffer)
+    _, err = io.Copy(buf, podLogs)
+    if err != nil {
+        return "error in copy information from podLogs to buf"
+    }
+}
+
+// Keeping the reflection code here for now, but probably won't need it.
+func discoverApis(cs *kubernetes.Clientset, namespace string) {
+    // Create the meta-variable to examine the clientset variable.
+	cst := reflect.TypeOf(cs)
+    fmt.Println("The underlying type of cs: ", cst.Name())
+
+    for i := 0; i < cst.NumMethod(); i++ {
+		method := cst.Method(i)
+		name := method.Name
+		tp := method.Type
+		fmt.Println("Name: ", name)
+		fmt.Println("Type: ", tp)
+		fmt.Println()
+	}
+
+    // Try to call several of the most promising ones and repeat the method discovery process:
+    extensionsV1beta1 := cs.ExtensionsV1beta1()
+    extensionsV1beta1Type := reflect.TypeOf(extensionsV1beta1)
+    fmt.Println("Method set of the extensionsV1beta1 client subset:")
+    for i := 0; i < extensionsV1beta1Type.NumMethod(); i++ {
+        method := extensionsV1beta1Type.Method(i)
+        name := method.Name
+        tp := method.Type
+        fmt.Println("Name: ", name)
+        fmt.Println("Type: ", tp)
+        fmt.Println()
+	}
+
+    restClient := cs.RESTClient()
+    restClientType := reflect.TypeOf(restClient)
+    fmt.Println("Method set of the RESTClient subset:")
+    for i := 0; i < restClientType.NumMethod(); i++ {
+        method := restClientType.Method(i)
+        name := method.Name
+        tp := method.Type
+        fmt.Println("Name: ", name)
+        fmt.Println("Type: ", tp)
+        fmt.Println()
+	}
+
+    discoveryV1beta1 := cs.DiscoveryV1beta1()
+    discoveryV1beta1Type := reflect.TypeOf(discoveryV1beta1)
+    fmt.Println("Method set of the discoveryV1beta1 client subset:")
+    for i := 0; i < discoveryV1beta1Type.NumMethod(); i++ {
+        method := discoveryV1beta1Type.Method(i)
+        name := method.Name
+        tp := method.Type
+        fmt.Println("Name: ", name)
+        fmt.Println("Type: ", tp)
+        fmt.Println()
 	}
 }
