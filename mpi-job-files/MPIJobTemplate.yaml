@@ -6,7 +6,8 @@ metadata:
   labels:
     notebook-name: #<notebookName>
 spec:
-  #slotsPerWorker: Tensorflow example sets this attribute, but Pat's example template doesn't.
+  # Experimenting with a hard-coded value of 2 that should fit our standard 2-core cluster nodes.
+  slotsPerWorker: 2
   runPolicy:
     cleanPodPolicy: Running
   mpiReplicaSpecs:
@@ -55,6 +56,13 @@ spec:
                 requests:
                   cpu: '2'
                   memory: 1Gi
+            volumeMounts:
+            - mountPath: /home/jovyan/mpi-test
+              name: mpi-test
+          volumes:
+          - name: mpi-test
+            persistentVolumeClaim:
+              claimName: mpi-test
 
             # In the tensorflow example there are volume and volume mount definitions for the worker pods.
             # I don't think this is necessary if the container images used in the worker pod definitions
