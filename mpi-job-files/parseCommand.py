@@ -79,7 +79,7 @@ manifest = manifest.replace("#<mpiJobName>", mpiJobName)
 mv = argDict["-mpiNp"]
 manifest = manifest.replace("#<numberOfReplicas>", f"{mv}") #argDict["-mpiNp"]) 
 
-manifest = manifest.replace("#<mpirunOption>", f"- -n\n{12*' '}- '{mv} '\n{12*' '}#<mpirunOption>")
+manifest = manifest.replace("#<mpirunOption>", f"- -n\n{12*' '}- '{mv}'\n{12*' '}#<mpirunOption>")
 
 if "--bind-to" in argDict:
   mv = argDict["--bind-to"]
@@ -93,7 +93,8 @@ if "-x" in argDict:
 for key in argDict.keys():
   if re.match("^-OpenM\.", key):
     openmOptions.append(key)
-    openmOptions.append(argDict[key])
+    if len(argDict[key]) > 0:
+      openmOptions.append(argDict[key])
   if re.match("^-ini$", key):
     openmOptions.append(key)
     openmOptions.append(argDict[key])
