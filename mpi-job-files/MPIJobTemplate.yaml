@@ -51,11 +51,11 @@ spec:
             name: #<mpiJobName>-worker
             resources:
                 limits:
-                  cpu: '2'
-                  memory: 2Gi
+                  cpu: '5'
+                  memory: 5Gi
                 requests:
-                  cpu: '2'
-                  memory: 1Gi
+                  cpu: '4'
+                  memory: 4Gi
             volumeMounts:
             - mountPath: /home/jovyan/mpi-test
               name: mpi-test
