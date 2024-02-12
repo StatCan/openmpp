@@ -3,7 +3,7 @@
 # Working directory is assumed to be: /opt/openmpp/<openmpp-root-dir>/
 
 # Parse openm web service arguments and create manifest instance:
-manifest=$(python3 ./parseCommand.py "$@")
+manifest=$(python3 ./bin/parseCommand.py "$@")
 
 # KLW 16-01-2024 https://github.com/StatCan/openmpp/issues/51
 if [ $? -ne 0 ]; then
