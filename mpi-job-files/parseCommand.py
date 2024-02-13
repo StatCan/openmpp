@@ -74,6 +74,10 @@ if not os.path.isfile(modelExecutable):
 
 mpiJobName = f"{mv}-{str(time()).replace('.', '-')}".lower()
 
+
+with open("./etc/mpiJobName", "w") as jN:
+  jN.write(mpiJobName)
+
 manifest = manifest.replace("#<mpiJobName>", mpiJobName)
 
 mv = argDict["-mpiNp"]
