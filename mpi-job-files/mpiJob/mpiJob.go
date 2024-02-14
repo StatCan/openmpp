@@ -297,8 +297,8 @@ func mpiJob(modelName, exeStem, dir, binDir, dbPath string, mpiNp int32, args []
 
 	// Construct MPIJob object:
 	job := kubeAPI.MPIJob{
-		(meta.TypeMeta): tm,
-		(meta.ObjectMeta): om,
+		TypeMeta: tm,
+		ObjectMeta: om,
 		Spec: mpiJobSpec,
 	}
 	return job
