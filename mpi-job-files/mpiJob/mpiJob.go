@@ -107,7 +107,7 @@ func main() {
 	// Submit request to create MPIJob. 
     // It's confusing because an MPIJob is passed as an argument as well.
     // The MPIJob being returned should have an active status.
-	_, err := mpiJobs.Create(context.TODO(), &job, meta.CreateOptions{})
+	_, err = mpiJobs.Create(context.TODO(), &job, meta.CreateOptions{})
 	if err != nil {
 		panic(err.Error())
 	} else {
@@ -123,7 +123,7 @@ func main() {
 
 	// Display status of mpi jobs in collection.
 	for _, r := range results.Items {
-		fmt.Println("Job name: ", r.(meta.ObjectMeta).Name)
+		fmt.Println("Job name: ", r.ObjectMeta.Name)
 		for _, c := range r.Status.Conditions {
 			fmt.Println("Condition type:", c.Type, " ... ", "Status", c.Status)
 			fmt.Println("")
