@@ -5,10 +5,13 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -17,7 +20,7 @@ import (
 	//"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	meta "k8s.io/apimachinery/pkg/apis/meta/v1"
-	//"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
 	kubeAPI "github.com/kubeflow/training-operator/pkg/apis/kubeflow.org/v1"
@@ -36,6 +39,8 @@ import (
 //  Env       map[string]string // environment variables to run the model
 
 func main() {
+	// Set hardcoded namespace for now:
+	namespace := "jacek-dev"
 	// Set some sample argument values.
 	modelName := "RiskPaths"
 	exeStem := "RiskPaths"
@@ -84,15 +89,6 @@ func main() {
 		fmt.Println("Cluster config object created.")
 	}
 
-	// Obtain clientset from cluster. We will need it to access launcher pod logs.
-    // Commenting out function call because we're not using it in code yet.
-    // clientSet, err := kubernetes.NewForConfig(config)
-	// if err != nil {
-	// 	panic(err.Error())
-	// } else {
-	// 	fmt.Println("Clientset obtained from config.")
-	// }
-
 	// Obtain client subset containing just the kubeflow based resources.
 	kubeClientSubset, err := kubeClient.NewForConfig(config)
 	if err != nil {
@@ -102,11 +98,12 @@ func main() {
 	}
 
 	// Obtain an interface to the MPIJobs collection for specified namespace.
-	mpiJobs := kubeClientSubset.MPIJobs("jacek-dev")
+	mpiJobs := kubeClientSubset.MPIJobs(namespace)
 
-	// Submit request to create MPIJob. 
-    // It's confusing because an MPIJob is passed as an argument as well.
-    // The MPIJob being returned should have an active status.
+	// Submit request to create MPIJob.
+	// It's confusing because an MPIJob is passed as an argument as well.
+	// Presumably, the MPIJob being returned should have an active status,
+    // whereas the one being submitted will not.
 	_, err = mpiJobs.Create(context.TODO(), &job, meta.CreateOptions{})
 	if err != nil {
 		panic(err.Error())
@@ -128,6 +125,37 @@ func main() {
 			fmt.Println("Condition type:", c.Type, " ... ", "Status", c.Status)
 			fmt.Println("")
 		}
+	}
+
+	// Obtain clientset with core resources. We will need it to access launcher pod logs.
+	clientSet, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	} else {
+		fmt.Println("Clientset obtained from config.")
+	}
+
+	// Get name of launcher pod. It defaults to name of main container in launcher pod.
+	name := job.Spec.MPIReplicaSpecs["Launcher"].Template.Spec.Containers[0].Name
+	podLogOptions := core.PodLogOptions{}
+
+	req := clientSet.CoreV1().Pods(namespace).GetLogs(name, &podLogOptions)
+
+	// I want to check what type req is:
+	tp := reflect.TypeOf(req)
+	fmt.Println("Type of req: ", tp, " Name: ", tp.Name())
+
+	podLogs, err := req.Stream(context.TODO())
+	if err != nil {
+		panic(err.Error())
+	}
+	defer podLogs.Close()
+
+	// Let's see if this passes the launcher logs stream to standard output:
+	buf := new(bytes.Buffer)
+	_, err = io.Copy(buf, podLogs)
+	if err != nil {
+		panic(err.Error())
 	}
 
 	// Use os.Exit to terminate the program and return a status code.
@@ -283,23 +311,23 @@ func mpiJob(modelName, exeStem, dir, binDir, dbPath string, mpiNp int32, args []
 	}
 	hostname := string(data)
 
-    // Type and object metadata:
-    tm := meta.TypeMeta {
-        Kind: "MPIJob",
-        APIVersion: "kubeflow.org/v1",
-    }
-    om := meta.ObjectMeta {
-        Name: strings.Join([]string{modelName, timeStamp}, "-"),
+	// Type and object metadata:
+	tm := meta.TypeMeta{
+		Kind:       "MPIJob",
+		APIVersion: "kubeflow.org/v1",
+	}
+	om := meta.ObjectMeta{
+		Name: strings.Join([]string{modelName, timeStamp}, "-"),
 		Labels: map[string]string{
-		    "notebook-name": hostname,
+			"notebook-name": hostname,
 		},
-    }
+	}
 
 	// Construct MPIJob object:
 	job := kubeAPI.MPIJob{
-		TypeMeta: tm,
+		TypeMeta:   tm,
 		ObjectMeta: om,
-		Spec: mpiJobSpec,
+		Spec:       mpiJobSpec,
 	}
 	return job
 }

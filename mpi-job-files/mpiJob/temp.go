@@ -4,6 +4,8 @@
 // But we could try this suggestion also. This is a function with any empty body that accepts
 // any number of arguments of any type. Invoking this function once in our main() and passing 
 // it all the unused variables takes care of all the unused variable build errors.
+package temp
+
 func UNUSED(x ...interface{}) {}
 
 // Modify this to conform to our use case. We'll have already created a clientset.
