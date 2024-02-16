@@ -103,7 +103,7 @@ func main() {
 	// Submit request to create MPIJob.
 	// It's confusing because an MPIJob is passed as an argument as well.
 	// Presumably, the MPIJob being returned should have an active status,
-    // whereas the one being submitted will not.
+	// whereas the one being submitted will not.
 	_, err = mpiJobs.Create(context.TODO(), &job, meta.CreateOptions{})
 	if err != nil {
 		panic(err.Error())
@@ -226,7 +226,7 @@ func mpiJob(modelName, exeStem, dir, binDir, dbPath string, mpiNp int32, args []
 	}
 
 	// Launcher container spec:
-	mainContainerName := strings.Join([]string{modelName, timeStamp, "launcher"}, "-")
+	mainContainerName := strings.Join([]string{strings.ToLower(modelName), timeStamp, "launcher"}, "-")
 	launcherContainer := core.Container{
 		Name:      mainContainerName,
 		Image:     containerImage,
@@ -237,7 +237,7 @@ func mpiJob(modelName, exeStem, dir, binDir, dbPath string, mpiNp int32, args []
 
 	// Worker container spec:
 	workerContainer := core.Container{
-		Name:      strings.Join([]string{modelName, timeStamp, "worker"}, "-"),
+		Name:      strings.Join([]string{strings.ToLower(modelName), timeStamp, "worker"}, "-"),
 		Image:     containerImage,
 		Resources: workerResourceRequirements,
 	}
@@ -309,7 +309,7 @@ func mpiJob(modelName, exeStem, dir, binDir, dbPath string, mpiNp int32, args []
 	if err != nil {
 		panic(err.Error())
 	}
-	hostname := string(data)
+	hostname := strings.Replace(string(data), "\n", "", -1)
 
 	// Type and object metadata:
 	tm := meta.TypeMeta{
@@ -317,7 +317,7 @@ func mpiJob(modelName, exeStem, dir, binDir, dbPath string, mpiNp int32, args []
 		APIVersion: "kubeflow.org/v1",
 	}
 	om := meta.ObjectMeta{
-		Name: strings.Join([]string{modelName, timeStamp}, "-"),
+		Name: strings.Join([]string{strings.ToLower(modelName), timeStamp}, "-"),
 		Labels: map[string]string{
 			"notebook-name": hostname,
 		},
