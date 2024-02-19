@@ -4,23 +4,26 @@ import os
 from time import time
 from pathlib import Path
 
-# Working directory is assumed to be: 
+# Working directory is assumed to be:
 # /opt/openmpp/<openmpp-root-dir>/
 
 # Get directory where model executables are stored:
 with open("./etc/oms_model_dir") as mD:
-  modelBinsDir = os.path.join(mD.read().strip("\n"), "bin".strip("\n"))
+    modelBinsDir = os.path.join(mD.read().strip("\n"), "bin".strip("\n"))
 
 # Load manifest template contents:
 with open("./etc/MPIJobTemplate.yaml") as template:
-  manifest = template.read()
+    manifest = template.read()
 
 # Save input arguments to file for debugging:
 with open("./etc/inputArguments", "w") as inputArgs:
-  inputArgs.write(' '.join(sys.argv))
+    # merge argv array into a single string
+    argString = " ".join(sys.argv)
+    inputArgs.write(argString)
 
+# note, absolute path, no dot
 with open("/etc/hostname") as nN:
-  notebookName = nN.read()
+    notebookName = nN.read()
 
 # Save unrecognized command line options to file for debugging:
 unrecognized = ""
@@ -30,69 +33,82 @@ unrecognized = ""
 manifest = manifest.replace("#<notebookName>", notebookName)
 
 # Set working directory for mpirun to the ...models/bin directory:
-manifest = manifest.replace("#<mpirunOption>", \
-  f"- -wdir\n{12*' '}- {modelBinsDir}\n{12*' '}#<mpirunOption>")
+manifest = manifest.replace(
+    "#<mpirunOption>", f"- -wdir\n{12*' '}- {modelBinsDir}\n{12*' '}#<mpirunOption>"
+)
 
-#These variables need to be scoped outside of the while loop:
+# These variables need to be scoped outside of the while loop:
 openmOptions = []
 modelExecutable = ""
 
-# The remaining manifest values come from command line options passed by oms:
-i = 1
-while i < len(sys.argv):
-  if (i + 1 < len(sys.argv) and re.match("^-modelName$", sys.argv[i])):
-    # Construct fully qualified model executable name:
-    modelExecutable = '_'.join([os.path.join(modelBinsDir, sys.argv[i+1]), "mpi"])
+############################
+# KLW 2024-02-07 replace command line argument parsing
+# input string (command line arguments) handling
+# split on ' -' instead of just space
+argArray = argString.split(" -")
+argDict = {}
 
-    # KLW 16-01-2024 https://github.com/StatCan/openmpp/issues/51
-    if not os.path.isfile(modelExecutable):
-        exit()
-      
-    # Enter unique mpijob name:
-    mpiJobName = f"{sys.argv[i+1]}-{str(time()).replace('.', '-')}".lower()
-    manifest = manifest.replace("#<mpiJobName>", mpiJobName)
+# arg[0] is the command itself, so ignore
+for i in range(1, len(argArray)):
+    argItem = argArray[i].split()  # defaults to spliting on space
+    argKey = "-" + argItem[0]  # replace the - at the beginning
+    argVal = ""
+    for j in range(1, len(argItem)):
+        argVal = argVal + argItem[j]  # combine the rest of the argItem, removing spaces
 
-    # Pass name to file for monitoring mpijob later:
-    with open("./etc/mpiJobName", "w") as jN:
-      jN.write(mpiJobName)
-    i += 2
+    # finally, add to the Dict
+    argDict[argKey] = argVal.strip()
+    # print(argKey, " ", argVal)
 
-  # Number of replicas to create:
-  elif (i + 1 < len(sys.argv) and re.match("^-mpiNp$", sys.argv[i]) and re.match("^[0-9]+$", sys.argv[i+1])):
-    manifest = manifest.replace("#<numberOfReplicas>", f"{sys.argv[i+1]}")
-    manifest = manifest.replace("#<mpirunOption>", \
-      f"- -n\n{12*' '}- '{sys.argv[i+1]}'\n{12*' '}#<mpirunOption>")
-    i += 2
+# add the command for completeness
+argDict["command"] = argArray[0]
 
-  # mpirun bind-to option:
-  elif (i + 1 < len(sys.argv) and re.match("^--bind-to$", sys.argv[i]) \
-  and re.match("^(core|socket|none)$", sys.argv[i+1])):
-    manifest = manifest.replace("#<mpirunOption>", \
-      f"- --bind-to\n{12*' '}- {sys.argv[i+1]}\n{12*' '}#<mpirunOption>")
-    i += 2
+### Modify the manifest template
+mv = argDict["-modelName"]
+modelExecutable = "_".join([os.path.join(modelBinsDir, mv), "mpi"])
 
-  # mpirun environment variable options:
-  elif (i + 1 < len(sys.argv) and re.match("^-x$", sys.argv[i]) \
-  and re.match("[a-zA-Z_][a-zA-Z0-9_]*=[^=]+$", sys.argv[i+1])):
-    manifest = manifest.replace("#<mpirunOption>", \
-      f"- -x\n{12*' '}- {sys.argv[i+1]}\n{12*' '}#<mpirunOption>")
-    i += 2
+# KLW 16-01-2024 https://github.com/StatCan/openmpp/issues/51
+if not os.path.isfile(modelExecutable):
+    print("ERROR. Model executable not found: ", modelExecutable)
+    exit(1)
 
-  # OpenM options and arguments:
-  elif (i + 1 < len(sys.argv) and re.match("^-OpenM\.", sys.argv[i]) \
-  and re.match("[a-zA-Z0-9_/\.-]+", sys.argv[i+1])):
-    openmOptions.append(sys.argv[i])
-    openmOptions.append(sys.argv[i+1])
-    i += 2
+mpiJobName = f"{mv}-{str(time()).replace('.', '-')}".lower()
 
-  # Unrecognized command line options:
-  else:
-    unrecognized += f"{sys.argv[i]}\n"
-    i += 1
 
-# Write any unrecognized options to file for debugging:
-with open("./etc/unrecognizedCmdLineOptions", "w") as u:
-  u.write(unrecognized)
+with open("./etc/mpiJobName", "w") as jN:
+    jN.write(mpiJobName)
+
+manifest = manifest.replace("#<mpiJobName>", mpiJobName)
+
+mv = argDict["-mpiNp"]
+manifest = manifest.replace("#<numberOfReplicas>", f"{mv}")  # argDict["-mpiNp"])
+
+manifest = manifest.replace(
+    "#<mpirunOption>", f"- -n\n{12*' '}- '{mv}'\n{12*' '}#<mpirunOption>"
+)
+
+if "--bind-to" in argDict:
+    mv = argDict["--bind-to"]
+    manifest = manifest.replace(
+        "#<mpirunOption>", f"- --bind-to\n{12*' '}- {mv}\n{12*' '}#<mpirunOption>"
+    )
+
+if "-x" in argDict:
+    mv = argDict["-x"]
+    manifest = manifest.replace(
+        "#<mpirunOption>", f"- -x\n{12*' '}- {mv}\n{12*' '}#<mpirunOption>"
+    )
+
+# loop through the -OpenM. arguments and add them to the openmOptions string
+for key in argDict.keys():
+    if re.match("^-OpenM\.", key):
+        openmOptions.append(key)
+        if len(argDict[key]) > 0:
+            openmOptions.append(argDict[key])
+    if re.match("^-ini$", key):
+        openmOptions.append(key)
+        openmOptions.append(argDict[key])
+
 
 # Compose bash arguments and replace placeholder in mpijob template:
 bashArguments = f"ulimit -s 63356 && {modelExecutable} {' '.join(openmOptions)}"
