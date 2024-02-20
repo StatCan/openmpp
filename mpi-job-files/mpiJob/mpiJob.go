@@ -147,37 +147,32 @@ func main() {
 	// Both are defined in: client-go/kubernetes/core/v1.
 	// Pod type is defined in: k8s.io/api/core/v1.
 
-	// Use PodInterface Get method to obtain Pod object representing the launcher pod.
+	// launcherPod has Status field of type PodStatus.
+	// PodStatus includes fields: Phase PodPhase, ContainerStatuses []ContainerStatus
+	// Poll launcher pod status until it's Running or in a terminal state or until it times out.
 	var launcherPod *core.Pod
 	elapsedTime := 0
 	for {
-		launcherPod, err = clientSet.CoreV1().Pods(namespace).Get(context.TODO(), name, meta.GetOptions{})
+		// Use PodInterface Get method to obtain Pod object representing the launcher pod.
+		launcherPod, err := clientSet.CoreV1().Pods(namespace).Get(context.TODO(), name, meta.GetOptions{})
+
+		// If pod object is returned check its status.
 		if err == nil {
-			break
-		} else if elapsedTime < 60 {
-			time.Sleep(time.Second)
-			elapsedTime += 1
+			phase := launcherPod.Status.Phase
+			fmt.Println("PodPhase: ", phase)
+			if phase == core.PodRunning || phase == core.PodSucceeded {
+				break
+			} else if phase == core.PodFailed || phase == core.PodPending && elapsedTime > 300 {
+				panic(err.Error())
+			}
+		} else if elapsedTime < 300 {
+			time.Sleep(2 * time.Second)
+			elapsedTime += 2
 		} else {
 			panic(err.Error())
 		}
 	}
 
-	// launcherPod has Status field of type PodStatus.
-	// PodStatus includes fields: Phase PodPhase, ContainerStatuses []ContainerStatus
-	// Poll launcher pod's PodStatus.Phase until it's Running or in a terminal state or until it times out.
-	elapsedTime = 0
-	for {
-		phase := launcherPod.Status.Phase
-		fmt.Println(phase)
-		if phase == core.PodRunning || phase == core.PodSucceeded {
-			break
-		} else if phase == core.PodFailed || phase == core.PodPending && elapsedTime > 300 {
-			panic(err.Error())
-		} else {
-			time.Sleep(2 * time.Second)
-			elapsedTime += 2
-		}
-	}
 	// Print PodStatus.Phase one last time:
 	fmt.Println(launcherPod.Status.Phase)
 
