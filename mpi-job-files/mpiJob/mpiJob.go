@@ -100,10 +100,8 @@ func main() {
 	// Obtain an interface to the MPIJobs collection for specified namespace.
 	mpiJobs := kubeClientSubset.MPIJobs(namespace)
 
-	// Submit request to create MPIJob.
-	// It's confusing because an MPIJob is passed as an argument as well.
-	// Presumably, the MPIJob being returned should have an active status,
-	// whereas the one being submitted will not.
+	// Submit request to create MPIJob. It's confusing because an MPIJob is also passed as an argument.
+	// But the MPIJob being returned should have an active status, while the one being submitted will not.
 	_, err = mpiJobs.Create(context.TODO(), &job, meta.CreateOptions{})
 	if err != nil {
 		panic(err.Error())
@@ -135,16 +133,52 @@ func main() {
 		fmt.Println("Clientset obtained from config.")
 	}
 
-	// Get name of launcher pod. It defaults to name of main container in launcher pod.
+	// Get launcher pod name. It defaults to name of main container in launcher pod.
 	name := job.Spec.MPIReplicaSpecs["Launcher"].Template.Spec.Containers[0].Name
-	podLogOptions := core.PodLogOptions{}
 
+	// Confirm it's returning the correct pod name:
+	fmt.Println("Launcher pod name: ", name)
+
+	// CoreV1() returns a CoreV1Interface instance.
+	// Pods(namespace) returns a PodInterface instance.
+	// Both are defined in: client-go/kubernetes/core/v1.
+	// Pod type is defined in: k8s.io/api/core/v1.
+
+	// Use PodInterface Get method to get Pod object representing the launcher pod.
+	launcherPod, err := clientSet.CoreV1().Pods(namespace).Get(context.TODO(), name, meta.GetOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	// launcherPod has Status field of type PodStatus.
+	// PodStatus includes fields: Phase PodPhase, ContainerStatuses []ContainerStatus
+	// Poll launcher pod's PodStatus.Phase until it's Running or in a terminal state or until it times out.
+	elapsedTime := 0
+	for {
+		phase := launcherPod.Status.Phase
+		fmt.Println(phase)
+		if phase == core.PodRunning || phase == core.PodSucceeded {
+			break
+		} else if phase == core.PodFailed || phase == core.PodPending && elapsedTime > 60 {
+			panic(err.Error())
+		} else {
+			time.Sleep(2 * time.Second)
+			elapsedTime += 2
+		}
+	}
+	// Print PodStatus.Phase one last time:
+	fmt.Println(launcherPod.Status.Phase)
+
+	// Once launcher pod is running hook into its logs using a rest.Request instance:
+	podLogOptions := core.PodLogOptions{}
 	req := clientSet.CoreV1().Pods(namespace).GetLogs(name, &podLogOptions)
 
-	// I want to check what type req is:
+	// I want to check what type req is.
 	tp := reflect.TypeOf(req)
 	fmt.Println("Type of req: ", tp, " Name: ", tp.Name())
 
+	// podLogs is of type io.ReadCloser.
+	// It implements the Reader and Closer interfaces in the standard library.
 	podLogs, err := req.Stream(context.TODO())
 	if err != nil {
 		panic(err.Error())
