@@ -5,7 +5,6 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -176,14 +175,14 @@ func main() {
 	// 	}
 	// }
 
-	time.Sleep(25 * time.Second)
+	time.Sleep(15 * time.Second)
 	launcherPod, err := clientSet.CoreV1().Pods(namespace).Get(context.TODO(), name, meta.GetOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
 
 	// Print PodStatus.Phase one last time:
-	fmt.Println(launcherPod.Status.Phase)
+	fmt.Println("Launcher pod phase: ", launcherPod.Status.Phase)
 
 	// Once launcher pod is running hook into its logs using a rest.Request instance:
 	podLogOptions := core.PodLogOptions{}
@@ -202,8 +201,7 @@ func main() {
 	defer podLogs.Close()
 
 	// Let's see if this passes the launcher logs stream to standard output:
-	buf := new(bytes.Buffer)
-	_, err = io.Copy(buf, podLogs)
+	_, err = io.Copy(os.Stdout, podLogs)
 	if err != nil {
 		panic(err.Error())
 	}
