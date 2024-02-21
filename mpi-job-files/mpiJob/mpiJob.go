@@ -175,7 +175,7 @@ func main() {
 	// 	}
 	// }
 
-	time.Sleep(15 * time.Second)
+	time.Sleep(25 * time.Second)
 	launcherPod, err := clientSet.CoreV1().Pods(namespace).Get(context.TODO(), name, meta.GetOptions{})
 	if err != nil {
 		panic(err.Error())
