@@ -10,7 +10,7 @@ import (
 	"io"
 	"os"
 	"path"
-	"reflect"
+	//"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -38,9 +38,9 @@ import (
 //  Env       map[string]string // environment variables to run the model
 
 func main() {
-	// Set hardcoded namespace for now:
+	// Set hardcoded namespace and argument values representing
+	// an mpijob run request from the OpenM web service:
 	namespace := "jacek-dev"
-	// Set some sample argument values.
 	modelName := "RiskPaths"
 	exeStem := "RiskPaths"
 	dir := "/home/jovyan/buckets/aaw-unclassified/microsim/models/bin"
@@ -88,6 +88,28 @@ func main() {
 		fmt.Println("Cluster config object created.")
 	}
 
+	// Obtain clientset with core resources. We will need it to access launcher pod logs.
+	clientSet, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	} else {
+		fmt.Println("Clientset obtained from config.")
+	}
+
+	// Obtain interface to Pods collection for our namespace.
+	pods := clientSet.CoreV1().Pods(namespace)
+
+	// Obtain pods collection Watch interface:
+	podsWatcher, err := pods.Watch(context.TODO(), meta.ListOptions{})
+	if err != nil {
+		panic(err.Error())
+	} else {
+		fmt.Println("Obtained pods collection watch interface.")
+	}
+
+	// Obtain reference to Pods collection event channel:
+	podsChan := podsWatcher.ResultChan()
+
 	// Obtain client subset containing just the kubeflow based resources.
 	kubeClientSubset, err := kubeClient.NewForConfig(config)
 	if err != nil {
@@ -96,8 +118,19 @@ func main() {
 		fmt.Println("Kubeflow client subset obtained from config.")
 	}
 
-	// Obtain an interface to the MPIJobs collection for specified namespace.
+	// Obtain interface to the MPIJobs collection for our namespace.
 	mpiJobs := kubeClientSubset.MPIJobs(namespace)
+
+	// Obtain MPIJobs collection Watch interface.
+	mpiJobsWatcher, err := mpiJobs.Watch(context.TODO(), meta.ListOptions{})
+	if err != nil {
+		panic(err.Error())
+	} else {
+		fmt.Println("Obtained mpiJobs collection watch interface.")
+	}
+
+	// Obtain reference to MPIJobs collection event channel:
+	mpiJobsChan := mpiJobsWatcher.ResultChan()
 
 	// Submit request to create MPIJob. It's confusing because an MPIJob is also passed as an argument.
 	// But the MPIJob being returned should have an active status, while the one being submitted will not.
@@ -108,34 +141,52 @@ func main() {
 		fmt.Println("MPIJob was successfully submitted.")
 	}
 
-	// Wait a second for mpi job to spin up.
-	time.Sleep(time.Second)
+	// Watch for events coming from MPIJobs collection and Pods collection:
+	elapsedTime := 0
+	for {
+		select {
+		case podEvent, ok := <-podsChan:
+			if ok {
+				fmt.Println("Pod event. Event type:", podEvent.Type)
+			} else {
+				fmt.Println("podsChannel is closed.")
+			}
+		case mpiJobEvent, ok := <-mpiJobsChan:
+			if ok {
+				fmt.Println("MPIJob even. Event Type: ", mpiJobEvent.Type)
+			} else {
+				fmt.Println("mpiJobsChannel is closed.")
+			}
+		default:
+			fmt.Println("Elapsed time: ", elapsedTime)
+			time.Sleep(time.Second * 2)
+			elapsedTime += 2
 
-	results, err := mpiJobs.List(context.TODO(), meta.ListOptions{})
-	if err != nil {
-		panic(err.Error())
-	} else {
-		fmt.Println("MPIJobs collection obtained.")
-	}
-
-	// Display status of mpi jobs in collection.
-	for _, r := range results.Items {
-		fmt.Println("Job name: ", r.ObjectMeta.Name)
-		for _, c := range r.Status.Conditions {
-			fmt.Println("Condition type:", c.Type, " ... ", "Status", c.Status)
-			fmt.Println("")
+			// Break out after some reasonable time limit, at least for now when we're testing.
+			if elapsedTime > 120 {
+				break
+			}
 		}
 	}
 
-	// Obtain clientset with core resources. We will need it to access launcher pod logs.
-	clientSet, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		panic(err.Error())
-	} else {
-		fmt.Println("Clientset obtained from config.")
-	}
+	// Commenting out and probably removing, as it's not necessary to list unrelated mpijobs in output.
+	// results, err := mpiJobs.List(context.TODO(), meta.ListOptions{})
+	// if err != nil {
+	// 	panic(err.Error())
+	// } else {
+	// 	fmt.Println("MPIJobs collection obtained.")
+	// }
 
-	// Get launcher pod name. It defaults to name of main container in launcher pod.
+	// Display status of mpi jobs in collection.
+	// for _, r := range results.Items {
+	// 	fmt.Println("Job name: ", r.ObjectMeta.Name)
+	// 	for _, c := range r.Status.Conditions {
+	// 		fmt.Println("Condition type:", c.Type, " ... ", "Status", c.Status)
+	// 		fmt.Println("")
+	// 	}
+	// }
+
+	// Obtain launcher pod name from mpijob template. It defaults to name of main container in launcher pod.
 	name := job.Spec.MPIReplicaSpecs["Launcher"].Template.Spec.Containers[0].Name
 
 	// Confirm it's returning the correct pod name:
@@ -175,22 +226,22 @@ func main() {
 	// 	}
 	// }
 
-	time.Sleep(25 * time.Second)
-	launcherPod, err := clientSet.CoreV1().Pods(namespace).Get(context.TODO(), name, meta.GetOptions{})
-	if err != nil {
-		panic(err.Error())
-	}
+	// Ok, hard-coding a sleep interval worked. When we access the pod now it's available.
+	// time.Sleep(25 * time.Second)
+	// launcherPod, err := clientSet.CoreV1().Pods(namespace).Get(context.TODO(), name, meta.GetOptions{})
+	// if err != nil {
+	// 	panic(err.Error())
+	// }
 
 	// Print PodStatus.Phase one last time:
-	fmt.Println("Launcher pod phase: ", launcherPod.Status.Phase)
+	// fmt.Println("Launcher pod phase: ", launcherPod.Status.Phase)
 
 	// Once launcher pod is running hook into its logs using a rest.Request instance:
-	podLogOptions := core.PodLogOptions{}
-	req := clientSet.CoreV1().Pods(namespace).GetLogs(name, &podLogOptions)
+	req := clientSet.CoreV1().Pods(namespace).GetLogs(name, &core.PodLogOptions{})
 
 	// I want to check what type req is.
-	tp := reflect.TypeOf(req)
-	fmt.Println("Type of req: ", tp, " Name: ", tp.Name())
+	// tp := reflect.TypeOf(req)
+	// fmt.Println("Type of req: ", tp, " Name: ", tp.Name())
 
 	// podLogs is of type io.ReadCloser.
 	// It implements the Reader and Closer interfaces in the standard library.
@@ -200,7 +251,7 @@ func main() {
 	}
 	defer podLogs.Close()
 
-	// Let's see if this passes the launcher logs stream to standard output:
+	// Route launcher pod log stream to standard output.
 	_, err = io.Copy(os.Stdout, podLogs)
 	if err != nil {
 		panic(err.Error())
@@ -211,7 +262,7 @@ func main() {
 	os.Exit(0)
 }
 
-// Generate mpijob object based on arguments coming from openm web service and cluster configuration:
+// Generate mpijob object based on arguments coming from openm web service and cluster configuration.
 func mpiJob(modelName, exeStem, dir, binDir, dbPath string, mpiNp int32, args []string, env map[string]string) kubeAPI.MPIJob {
 
 	// Start off by constructing constituent parts from the bottom up:
