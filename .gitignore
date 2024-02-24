@@ -4,3 +4,7 @@ secrets/terraform-service-principal.sh
 terraform/.terraform/
 terraform/*.tfstate
 terraform/*.tfstate.backup
+
+mpi-job-files/src/
+mpi-job-files/pkg/
+mpi-job-files/*.swp
