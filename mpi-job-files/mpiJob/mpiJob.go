@@ -142,28 +142,45 @@ func main() {
 	}
 
 	// Watch for events coming from MPIJobs collection and Pods collection:
-	elapsedTime := 0
+	var elapsedTime time.Duration
 	for {
 		select {
 		case podEvent, ok := <-podsChan:
 			if ok {
-				fmt.Println("Pod event. Event type:", podEvent.Type)
+				fmt.Println("Pod event...")
+				fmt.Println("EventType: ", podEvent.Type)
+				gvk := podEvent.Object.GetObjectKind().GroupVersionKind()
+				fmt.Println("Group: ", gvk.Group)
+				fmt.Println("Version: ", gvk.Version)
+				fmt.Println("Kind: ", gvk.Kind)
+				// Use reflection to determine what concrete type we're actually
+				// getting behind the runtime.Object interface, and how can we
+				// determine launcher pod status from it.
+				fmt.Println("")
 			} else {
 				fmt.Println("podsChannel is closed.")
 			}
 		case mpiJobEvent, ok := <-mpiJobsChan:
 			if ok {
-				fmt.Println("MPIJob even. Event Type: ", mpiJobEvent.Type)
+				fmt.Println("MPIJob event...")
+				fmt.Println("EventType: ", mpiJobEvent.Type)
+				gvk := mpiJobEvent.Object.GetObjectKind().GroupVersionKind()
+				fmt.Println("Group: ", gvk.Group)
+				fmt.Println("Version: ", gvk.Version)
+				fmt.Println("Kind: ", gvk.Kind)
+				// Same thing, use reflection to figure out how to get mpijob
+				// status info from the concrete type behind runtime.Object.
+				fmt.Println("")
 			} else {
 				fmt.Println("mpiJobsChannel is closed.")
 			}
 		default:
 			fmt.Println("Elapsed time: ", elapsedTime)
-			time.Sleep(time.Second * 2)
-			elapsedTime += 2
+			time.Sleep(2 * time.Second) // Elapsed time is not quite correct because it ignores the time
+			elapsedTime += 2            // elapsed when the channel reads are happening.
 
 			// Break out after some reasonable time limit, at least for now when we're testing.
-			if elapsedTime > 120 {
+			if elapsedTime > (360 * time.Second) {
 				break
 			}
 		}
