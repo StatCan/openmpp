@@ -10,7 +10,7 @@ import (
 	"io"
 	"os"
 	"path"
-	//"reflect"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -156,6 +156,8 @@ func main() {
 				// Use reflection to determine what concrete type we're actually
 				// getting behind the runtime.Object interface, and how can we
 				// determine launcher pod status from it.
+                runtimeObjectType := reflect.TypeOf(podEvent.Object)
+                fmt.Println("golang type: ", runtimeObjectType, "Name: ", runtimeObjectType.Name())
 				fmt.Println("")
 			} else {
 				fmt.Println("podsChannel is closed.")
@@ -170,6 +172,8 @@ func main() {
 				fmt.Println("Kind: ", gvk.Kind)
 				// Same thing, use reflection to figure out how to get mpijob
 				// status info from the concrete type behind runtime.Object.
+                runtimeObjectType := reflect.TypeOf(mpiJobEvent.Type)
+                fmt.Println("golang type: ", runtimeObjectType, "Name: ", runtimeObjectType.Name())
 				fmt.Println("")
 			} else {
 				fmt.Println("mpiJobsChannel is closed.")
