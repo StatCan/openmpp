@@ -99,7 +99,12 @@ func main() {
 	// Obtain interface to Pods collection for our namespace.
 	pods := clientSet.CoreV1().Pods(namespace)
 
-	// Obtain pods collection Watch interface:
+	// CoreV1() returns a CoreV1Interface instance.
+	// Pods(namespace) returns a PodInterface instance.
+	// Both are defined in: client-go/kubernetes/core/v1.
+	// Pod type is defined in: k8s.io/api/core/v1.
+
+	// Obtain pods collection Watch interface.
 	podsWatcher, err := pods.Watch(context.TODO(), meta.ListOptions{})
 	if err != nil {
 		panic(err.Error())
@@ -107,7 +112,7 @@ func main() {
 		fmt.Println("Obtained pods collection watch interface.")
 	}
 
-	// Obtain reference to Pods collection event channel:
+	// Obtain reference to Pods collection event channel.
 	podsChan := podsWatcher.ResultChan()
 
 	// Obtain client subset containing just the kubeflow based resources.
@@ -129,7 +134,7 @@ func main() {
 		fmt.Println("Obtained mpiJobs collection watch interface.")
 	}
 
-	// Obtain reference to MPIJobs collection event channel:
+	// Obtain reference to MPIJobs collection event channel.
 	mpiJobsChan := mpiJobsWatcher.ResultChan()
 
 	// Submit request to create MPIJob. It's confusing because an MPIJob is also passed as an argument.
@@ -141,47 +146,96 @@ func main() {
 		fmt.Println("MPIJob was successfully submitted.")
 	}
 
-	// Watch for events coming from MPIJobs collection and Pods collection:
+	// Watch for events coming from MPIJobs collection and Pods collection.
 	var elapsedTime time.Duration
 	for {
 		select {
 		case podEvent, ok := <-podsChan:
 			if ok {
+				//fmt.Println("")
 				fmt.Println("Pod event...")
 				fmt.Println("EventType: ", podEvent.Type)
+
 				gvk := podEvent.Object.GetObjectKind().GroupVersionKind()
 				fmt.Println("Group: ", gvk.Group)
 				fmt.Println("Version: ", gvk.Version)
 				fmt.Println("Kind: ", gvk.Kind)
+
 				// Use reflection to determine what concrete type we're actually
 				// getting behind the runtime.Object interface, and how can we
 				// determine launcher pod status from it.
 				runtimeObjectType := reflect.TypeOf(podEvent.Object)
 				fmt.Println("golang type: ", runtimeObjectType)
+
+				// launcherPod (and any other pod) has Status field of type PodStatus.
+				// PodStatus includes fields: Phase PodPhase, ContainerStatuses []ContainerStatus
+				// Watch for launcher pod status until it's Running or in a terminal state or until
+				// we reach a time out.
+
+				// Use a type assertion to get the underlying type.
+				pPod, ok := podEvent.Object.(*core.Pod)
+				if ok {
+					// Access pod name and status
+					name := pPod.ObjectMeta.Name
+					phase := pPod.Status.Phase
+					fmt.Println("Pod name: ", name)
+					fmt.Println("Pod phase: ", phase)
+				}
+
+				// TODO
+				// Determine if launcher pod is ready to have its logs streamed here.
+				// and break out of the watch loop.
+				//
+				//phase := launcherPod.Status.Phase
+				// if phase == core.PodRunning || phase == core.PodSucceeded {
+				//     break
+				// } else if phase == core.PodFailed || phase == core.PodPending && elapsedTime > 300 {
+				//     panic(err.Error())
+				// }
+
 				fmt.Println("")
 			} else {
 				fmt.Println("podsChannel is closed.")
 			}
 		case mpiJobEvent, ok := <-mpiJobsChan:
 			if ok {
+				//fmt.Println("")
 				fmt.Println("MPIJob event...")
 				fmt.Println("EventType: ", mpiJobEvent.Type)
 				gvk := mpiJobEvent.Object.GetObjectKind().GroupVersionKind()
 				fmt.Println("Group: ", gvk.Group)
 				fmt.Println("Version: ", gvk.Version)
 				fmt.Println("Kind: ", gvk.Kind)
+
 				// Same thing, use reflection to figure out how to get mpijob
 				// status info from the concrete type behind runtime.Object.
 				runtimeObjectType := reflect.TypeOf(mpiJobEvent.Object)
 				fmt.Println("golang type: ", runtimeObjectType)
+
+				// Use a type assertion to get the underlying type.
+				pMpiJob, ok := mpiJobEvent.Object.(*kubeAPI.MPIJob)
+				if ok {
+					name := pMpiJob.ObjectMeta.Name
+					fmt.Println("Job name: ", name)
+
+					// Display job conditions that are in effect.
+					fmt.Println("Conditions:")
+					for _, jobCond := range pMpiJob.Status.Conditions {
+						if jobCond.Status == core.ConditionTrue {
+							fmt.Println("  ", jobCond.Type)
+						}
+					}
+				}
 				fmt.Println("")
 			} else {
 				fmt.Println("mpiJobsChannel is closed.")
 			}
 		default:
-			fmt.Println("Elapsed time: ", elapsedTime)
-			time.Sleep(2 * time.Second) // Elapsed time is not quite correct because it ignores the time
-			elapsedTime += 2            // elapsed when the channel reads are happening.
+			//fmt.Println("Elapsed time: ", elapsedTime)
+			// Elapsed time is not quite correct because it ignores the
+			// time that elapses when channel reads are happening.
+			time.Sleep(2 * time.Second)
+			elapsedTime += 2
 
 			// Break out after some reasonable time limit, at least for now when we're testing.
 			if elapsedTime > (360 * time.Second) {
@@ -207,20 +261,13 @@ func main() {
 	// 	}
 	// }
 
+	fmt.Println("Stopped watching event channels.")
+
 	// Obtain launcher pod name from mpijob template. It defaults to name of main container in launcher pod.
 	name := job.Spec.MPIReplicaSpecs["Launcher"].Template.Spec.Containers[0].Name
 
 	// Confirm it's returning the correct pod name:
 	fmt.Println("Launcher pod name: ", name)
-
-	// CoreV1() returns a CoreV1Interface instance.
-	// Pods(namespace) returns a PodInterface instance.
-	// Both are defined in: client-go/kubernetes/core/v1.
-	// Pod type is defined in: k8s.io/api/core/v1.
-
-	// launcherPod has Status field of type PodStatus.
-	// PodStatus includes fields: Phase PodPhase, ContainerStatuses []ContainerStatus
-	// Poll launcher pod status until it's Running or in a terminal state or until it times out.
 
 	// Commenting out because it's bugging out currently, and we want to test if we can get
 	// the log stream from the launcher pod once its up. We'll hard-code a wait instead for now.
@@ -260,11 +307,7 @@ func main() {
 	// Once launcher pod is running hook into its logs using a rest.Request instance:
 	req := clientSet.CoreV1().Pods(namespace).GetLogs(name, &core.PodLogOptions{})
 
-	// I want to check what type req is.
-	// tp := reflect.TypeOf(req)
-	// fmt.Println("Type of req: ", tp, " Name: ", tp.Name())
-
-	// podLogs is of type io.ReadCloser.
+	// podLogs is of (interface) type io.ReadCloser.
 	// It implements the Reader and Closer interfaces in the standard library.
 	podLogs, err := req.Stream(context.TODO())
 	if err != nil {
