@@ -146,26 +146,29 @@ func main() {
 		fmt.Println("MPIJob was successfully submitted.")
 	}
 
+	// Obtain launcher pod name from mpijob template. It defaults to name of main container in launcher pod.
+	launcherPodName := job.Spec.MPIReplicaSpecs["Launcher"].Template.Spec.Containers[0].Name
+
 	// Watch for events coming from MPIJobs collection and Pods collection.
 	var elapsedTime time.Duration
 	for {
 		select {
 		case podEvent, ok := <-podsChan:
 			if ok {
-				//fmt.Println("")
 				fmt.Println("Pod event...")
 				fmt.Println("EventType: ", podEvent.Type)
 
-				gvk := podEvent.Object.GetObjectKind().GroupVersionKind()
-				fmt.Println("Group: ", gvk.Group)
-				fmt.Println("Version: ", gvk.Version)
-				fmt.Println("Kind: ", gvk.Kind)
+				// gvk := podEvent.Object.GetObjectKind().GroupVersionKind()
+                // Not sure why these are showing empty strings. Commenting out for now.
+                // fmt.Println("Group: ", gvk.Group)
+				// fmt.Println("Version: ", gvk.Version)
+				// fmt.Println("Kind: ", gvk.Kind)
 
 				// Use reflection to determine what concrete type we're actually
 				// getting behind the runtime.Object interface, and how can we
 				// determine launcher pod status from it.
-				runtimeObjectType := reflect.TypeOf(podEvent.Object)
-				fmt.Println("golang type: ", runtimeObjectType)
+				// runtimeObjectType := reflect.TypeOf(podEvent.Object)
+				// fmt.Println("golang type: ", runtimeObjectType)
 
 				// launcherPod (and any other pod) has Status field of type PodStatus.
 				// PodStatus includes fields: Phase PodPhase, ContainerStatuses []ContainerStatus
@@ -180,37 +183,44 @@ func main() {
 					phase := pPod.Status.Phase
 					fmt.Println("Pod name: ", name)
 					fmt.Println("Pod phase: ", phase)
-				}
 
-				// TODO
-				// Determine if launcher pod is ready to have its logs streamed here.
-				// and break out of the watch loop.
-				//
-				//phase := launcherPod.Status.Phase
-				// if phase == core.PodRunning || phase == core.PodSucceeded {
-				//     break
-				// } else if phase == core.PodFailed || phase == core.PodPending && elapsedTime > 300 {
-				//     panic(err.Error())
-				// }
-
-				fmt.Println("")
+                    if name == launcherPodName {
+                        if phase == core.PodRunning {
+                        // TODO
+                        // Determine if launcher pod is ready to have its logs streamed here.
+                        // and break out of the watch loop.
+                        //
+                        //phase := launcherPod.Status.Phase
+                        // if phase == core.PodRunning || phase == core.PodSucceeded {
+                        //     break
+                        // } else if phase == core.PodFailed || phase == core.PodPending && elapsedTime > 300 {
+                        //     panic(err.Error())
+                        // }
+                        }
+                        else if phase == core.PodFailed {
+				        }
+                    }
+                }
+                fmt.Println("")
 			} else {
 				fmt.Println("podsChannel is closed.")
+                // should probably had this case as an error.
 			}
 		case mpiJobEvent, ok := <-mpiJobsChan:
 			if ok {
-				//fmt.Println("")
 				fmt.Println("MPIJob event...")
 				fmt.Println("EventType: ", mpiJobEvent.Type)
-				gvk := mpiJobEvent.Object.GetObjectKind().GroupVersionKind()
-				fmt.Println("Group: ", gvk.Group)
-				fmt.Println("Version: ", gvk.Version)
-				fmt.Println("Kind: ", gvk.Kind)
+
+                // gvk := mpiJobEvent.Object.GetObjectKind().GroupVersionKind()
+                // Not sure why these are set to empty strings. Commenting out for now.
+                // fmt.Println("Group: ", gvk.Group)
+				// fmt.Println("Version: ", gvk.Version)
+				// fmt.Println("Kind: ", gvk.Kind)
 
 				// Same thing, use reflection to figure out how to get mpijob
 				// status info from the concrete type behind runtime.Object.
-				runtimeObjectType := reflect.TypeOf(mpiJobEvent.Object)
-				fmt.Println("golang type: ", runtimeObjectType)
+				// runtimeObjectType := reflect.TypeOf(mpiJobEvent.Object)
+				// fmt.Println("golang type: ", runtimeObjectType)
 
 				// Use a type assertion to get the underlying type.
 				pMpiJob, ok := mpiJobEvent.Object.(*kubeAPI.MPIJob)
@@ -229,13 +239,14 @@ func main() {
 				fmt.Println("")
 			} else {
 				fmt.Println("mpiJobsChannel is closed.")
+                // Should probably treat this as an error condition.
 			}
 		default:
 			//fmt.Println("Elapsed time: ", elapsedTime)
 			// Elapsed time is not quite correct because it ignores the
 			// time that elapses when channel reads are happening.
 			time.Sleep(2 * time.Second)
-			elapsedTime += 2
+			elapsedTime += 2 * time.Second
 
 			// Break out after some reasonable time limit, at least for now when we're testing.
 			if elapsedTime > (360 * time.Second) {
@@ -244,71 +255,18 @@ func main() {
 		}
 	}
 
-	// Commenting out and probably removing, as it's not necessary to list unrelated mpijobs in output.
-	// results, err := mpiJobs.List(context.TODO(), meta.ListOptions{})
-	// if err != nil {
-	// 	panic(err.Error())
-	// } else {
-	// 	fmt.Println("MPIJobs collection obtained.")
-	// }
+	// Use os.Exit to terminate the program and return a status code.
+	// In cases of error we will be able to send an error status code that the web service should pick up.
+	os.Exit(0)
+}
 
-	// Display status of mpi jobs in collection.
-	// for _, r := range results.Items {
-	// 	fmt.Println("Job name: ", r.ObjectMeta.Name)
-	// 	for _, c := range r.Status.Conditions {
-	// 		fmt.Println("Condition type:", c.Type, " ... ", "Status", c.Status)
-	// 		fmt.Println("")
-	// 	}
-	// }
-
-	fmt.Println("Stopped watching event channels.")
-
-	// Obtain launcher pod name from mpijob template. It defaults to name of main container in launcher pod.
-	name := job.Spec.MPIReplicaSpecs["Launcher"].Template.Spec.Containers[0].Name
-
-	// Confirm it's returning the correct pod name:
-	fmt.Println("Launcher pod name: ", name)
-
-	// Commenting out because it's bugging out currently, and we want to test if we can get
-	// the log stream from the launcher pod once its up. We'll hard-code a wait instead for now.
-	// var launcherPod *core.Pod
-	// elapsedTime := 0
-	// for {
-	// 	// Use PodInterface Get method to obtain Pod object representing the launcher pod.
-	// 	launcherPod, err := clientSet.CoreV1().Pods(namespace).Get(context.TODO(), name, meta.GetOptions{})
-
-	// 	// If pod object is returned check its status.
-	// 	if err == nil {
-	// 		phase := launcherPod.Status.Phase
-	// 		fmt.Println("PodPhase: ", phase)
-	// 		if phase == core.PodRunning || phase == core.PodSucceeded {
-	// 			break
-	// 		} else if phase == core.PodFailed || phase == core.PodPending && elapsedTime > 300 {
-	// 			panic(err.Error())
-	// 		}
-	// 	} else if elapsedTime < 300 {
-	// 		time.Sleep(2 * time.Second)
-	// 		elapsedTime += 2
-	// 	} else {
-	// 		panic(err.Error())
-	// 	}
-	// }
-
-	// Ok, hard-coding a sleep interval worked. When we access the pod now it's available.
-	// time.Sleep(25 * time.Second)
-	// launcherPod, err := clientSet.CoreV1().Pods(namespace).Get(context.TODO(), name, meta.GetOptions{})
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
-
-	// Print PodStatus.Phase one last time:
-	// fmt.Println("Launcher pod phase: ", launcherPod.Status.Phase)
-
-	// Once launcher pod is running hook into its logs using a rest.Request instance:
-	req := clientSet.CoreV1().Pods(namespace).GetLogs(name, &core.PodLogOptions{})
+// Goroutine to be invoked concurrently from inside the status loop to stream launcher pod logs to stdout.
+func streamlauncherLogs(halt signal) {
+	// Once launcher pod is running hook into its logs using a rest.Request instance.
+    // Note that namespace and launcherPodName will be included in the function closure.
+	req := clientSet.CoreV1().Pods(namespace).GetLogs(launcherPodName, &core.PodLogOptions{})
 
 	// podLogs is of (interface) type io.ReadCloser.
-	// It implements the Reader and Closer interfaces in the standard library.
 	podLogs, err := req.Stream(context.TODO())
 	if err != nil {
 		panic(err.Error())
@@ -317,13 +275,11 @@ func main() {
 
 	// Route launcher pod log stream to standard output.
 	_, err = io.Copy(os.Stdout, podLogs)
-	if err != nil {
+	if err == io.EOF {
+        return
+    } else if err != nil {
 		panic(err.Error())
 	}
-
-	// Use os.Exit to terminate the program and return a status code.
-	// In cases of error we will be able to send an error status code that the web service should pick up.
-	os.Exit(0)
 }
 
 // Generate mpijob object based on arguments coming from openm web service and cluster configuration.
