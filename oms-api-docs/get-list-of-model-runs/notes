@@ -1,0 +1,29 @@
+Notes:
+
+
+Command: 
+    GET /api/model/<model>/run-list
+    GET /api/model/<model>/run-list/text/lang/<lang>
+
+    Where <model> denotes the model for which run list is being requested.
+    <lang> denotes the language choice for the language specific model run information.
+
+Handlers:
+    main.runListHandler
+    main.runListTextHandler
+
+Source file:
+    go/oms/handlerGet.go
+
+Key functions and objects:
+    main.(*ModelCatalog).RunListText
+    db.RunPub
+
+    Code fragment in RunListText with main database query:
+    // get run description and notes by model id and language
+    => 290:		q = "SELECT M.run_id, M.lang_id, L.lang_code, M.descr, M.note" +
+       291:			" FROM run_txt M" +
+       292:			" INNER JOIN run_lst H ON (H.run_id = M.run_id)" +
+       293:			" INNER JOIN lang_lst L ON (L.lang_id = M.lang_id)" +
+       294:			" WHERE H.model_id = " + strconv.Itoa(modelId)
+    

@@ -1,0 +1,15 @@
+[
+  {
+    "ModelName": "OzProj",
+    "ModelDigest": "29a0e9769f04e0588be82141cd07b1f4",
+    "ModelVersion": "0.22.0.0",
+    "ModelCreateDateTime": "2024-02-16 20:48:36.824",
+    "Name": "Default",
+    "BaseRunDigest": "",
+    "IsReadonly": true,
+    "UpdateDateTime": "2024-02-16 20:48:36.824",
+    "IsCleanBaseRun": false,
+    "Txt": [],
+    "Param": []
+  }
+]

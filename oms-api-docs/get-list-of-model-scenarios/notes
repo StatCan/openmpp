@@ -1,0 +1,22 @@
+Note:
+    The term model "workset" is a synonym for model scenario.
+
+Command: 
+    GET <domain name>/api/model/<model>/workset-list
+        This one doesn't have language specific info.
+    GET <domain name>/api/model/<model>/workest-list/text/lang/<language>
+        This one contains language specific information in the specified language.
+    <model> is the specific model name or digest whose worksets are being requested.
+
+Methods:
+    main.worksetListHandler
+    main.worksetListTextHandler
+
+Source file:
+    go/oms/handlerGet.go
+
+Key objects:
+    db.GetWorksetList
+    db.WorksetRow
+        Contains identifiers and summary information of a model scenario that exists in the model database.
+

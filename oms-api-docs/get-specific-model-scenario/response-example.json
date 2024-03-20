@@ -1,0 +1,112 @@
+{
+  "ModelName": "IDMM",
+  "ModelDigest": "bd5730c6aec4fe70d3da6d8f3386d3c9",
+  "ModelVersion": "2.0.0.0",
+  "ModelCreateDateTime": "2024-02-16 20:48:22.865",
+  "Name": "Default",
+  "BaseRunDigest": "",
+  "IsReadonly": true,
+  "UpdateDateTime": "2024-02-16 20:48:22.865",
+  "IsCleanBaseRun": false,
+  "Txt": [
+    {
+      "LangCode": "EN",
+      "Descr": "scenario",
+      "Note": ""
+    }
+  ],
+  "Param": [
+    {
+      "Name": "ContactsOutPerHost",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "ContagiousPhaseDuration",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "DumpSickContactProbability",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "EnableChangeContactsEvent",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "ImmunePhaseDuration",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "InitialDiseasePrevalence",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "LatentPhaseDuration",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "MeanChangeContactsInterval",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "MeanContactInterval",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "NumberOfHosts",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "SimulationEnd",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "SimulationSeed",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    },
+    {
+      "Name": "TransmissionEfficiency",
+      "Txt": [],
+      "SubCount": 1,
+      "DefaultSubId": 0,
+      "ValueDigest": ""
+    }
+  ]
+}
+

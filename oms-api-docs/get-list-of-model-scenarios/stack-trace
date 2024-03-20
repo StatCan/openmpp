@@ -1,0 +1,15 @@
+0  0x0000000000b0e1cf in main.worksetListTextHandler
+   at ./handlerGet.go:417
+1  0x00000000008afe30 in github.com/husobee/vestigo.glob..func6.1
+   at /home/jacek/go/pkg/mod/github.com/husobee/vestigo@v1.1.1/handlers.go:160
+2  0x00000000008b1313 in github.com/husobee/vestigo.(*Router).ServeHTTP
+   at /home/jacek/go/pkg/mod/github.com/husobee/vestigo@v1.1.1/router.go:67
+3  0x000000000088f7d7 in net/http.serverHandler.ServeHTTP
+   at /usr/local/go/src/net/http/server.go:2938
+4  0x0000000000889a99 in net/http.(*conn).serve
+   at /usr/local/go/src/net/http/server.go:2009
+5  0x00000000008905bc in net/http.(*Server).Serve.func3
+   at /usr/local/go/src/net/http/server.go:3086
+6  0x0000000000477221 in runtime.goexit
+   at /usr/local/go/src/runtime/asm_amd64.s:1650
+

@@ -1,0 +1,26 @@
+Notes:
+    This variant of the request is listed in the wiki but returns a code 405 (Method Not Allowed) error:
+        GET /api/model/<model>/workset/<workset>
+
+Command: 
+    GET /api/model/<model>/workset/<workset>/status
+    GET /api/model/<model>/workset/<workset>/text/lang/<lang>
+
+    Where <workset> denotes the model scenario digest or name.
+    Scenario names will be unique for a particular model but may be duplicated among different models.
+    <lang> denotes the language choice for the language specific scenario information like parameter names.
+
+Handlers:
+    main.worksetStatusHandler
+    main.worksetTextHandler
+
+Source file:
+    go/oms/handlerGet.go
+
+Key functions and objects:
+    main.(*ModelCatalog).WorksetByName
+    main.(*ModelCatalog).modelMeta
+    db.ModelMeta
+    db.GetWorksetByName
+    db.WorksetRow
+     

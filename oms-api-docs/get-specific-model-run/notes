@@ -1,0 +1,22 @@
+Notes:
+    This bears investigating further, as the actual numerical run data as it would appear in the database tables is not contained in the RunResult object. Presumably other nested requests are in play.
+
+Command: 
+    GET /api/model/<model>/run/<run>/status (This one appears deprecated)
+    GET /api/model/<model>/run/<run>/text/lang/<lang>
+
+    Where <model> denotes the model for which run list is being requested.
+    <lang> denotes the language choice for the language specific model run information.
+    <run> denotes the model run digest or name whose information to get.
+
+Handlers:
+    main.RunTextHandler
+
+Source file:
+    go/oms/handlerGet.go
+
+Key functions and objects:
+    main.(*ModelCatalog).RunTextFull
+    db.(*RunMeta).ToPublic
+    db.GetRunFullText
+

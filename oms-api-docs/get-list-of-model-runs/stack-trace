@@ -1,0 +1,19 @@
+0  0x00000000009f8a29 in github.com/openmpp/go/ompp/db.GetRunListText
+   at /home/jacek/Projects/OpenM++/go/ompp/db/getRun.go:278
+1  0x0000000000af53da in main.(*ModelCatalog).RunListText
+   at ./getRun.go:312
+2  0x0000000000b0d552 in main.runListTextHandler
+   at ./handlerGet.go:256
+3  0x00000000008afe30 in github.com/husobee/vestigo.glob..func6.1
+   at /home/jacek/go/pkg/mod/github.com/husobee/vestigo@v1.1.1/handlers.go:160
+4  0x00000000008b1313 in github.com/husobee/vestigo.(*Router).ServeHTTP
+   at /home/jacek/go/pkg/mod/github.com/husobee/vestigo@v1.1.1/router.go:67
+5  0x000000000088f7d7 in net/http.serverHandler.ServeHTTP
+   at /usr/local/go/src/net/http/server.go:2938
+6  0x0000000000889a99 in net/http.(*conn).serve
+   at /usr/local/go/src/net/http/server.go:2009
+7  0x00000000008905bc in net/http.(*Server).Serve.func3
+   at /usr/local/go/src/net/http/server.go:3086
+8  0x0000000000477221 in runtime.goexit
+   at /usr/local/go/src/runtime/asm_amd64.s:1650
+

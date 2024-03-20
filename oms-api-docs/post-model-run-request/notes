@@ -1,0 +1,25 @@
+Notes:
+    To send a POST request to the oms web server with curl use the following command format:
+    
+    curl -X POST \
+    > --header "Content-Type: application/json" \
+    > --data @<file with request body in raw json format> \
+    > <domain name>/api/run
+    
+    The -X POST option specifies http request type.
+    The --data option allows for passing request body.
+    The @ symbol indicates that we're passing the request body from file.
+
+Command:
+    POST <domain name>/api/run
+
+Request handler:
+    main.runModelHandler
+
+Source code file:
+    go/oms/runModel.go
+
+Key objects and functions:
+    main.RunCatalog
+    main.(*RunCatalog).runModel
+

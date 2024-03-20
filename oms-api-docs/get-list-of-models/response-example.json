@@ -1,0 +1,114 @@
+[
+  {
+    "Model": {
+      "ModelId": 101,
+      "Name": "IDMM",
+      "Digest": "bd5730c6aec4fe70d3da6d8f3386d3c9",
+      "Type": 1,
+      "Version": "2.0.0.0",
+      "CreateDateTime": "2024-02-16 20:48:22.865",
+      "DefaultLangCode": "EN"
+    },
+    "Dir": ".",
+    "DbPath": "IDMM.sqlite",
+    "Extra": "{\n\"ModelDoc\": [\n   {\n   \"LangCode\": \"EN\",\n   \"Link\": \"IDMM.doc.EN.html\"\n   },\n   {\n   \"LangCode\": \"FR\",\n   \"Link\": \"IDMM.doc.FR.html\"\n   }\n]\n}\n"
+  },
+  {
+    "Model": {
+      "ModelId": 101,
+      "Name": "NewCaseBased",
+      "Digest": "ec388f9e6221e63ac248818b04633515",
+      "Type": 0,
+      "Version": "1.0.0.0",
+      "CreateDateTime": "2024-02-16 20:48:08.816",
+      "DefaultLangCode": "EN"
+    },
+    "Dir": ".",
+    "DbPath": "NewCaseBased.sqlite",
+    "Extra": "{\n\"ModelDoc\": [\n   {\n   \"LangCode\": \"EN\",\n   \"Link\": \"NewCaseBased.doc.EN.html\"\n   }\n]\n}\n"
+  },
+  {
+    "Model": {
+      "ModelId": 101,
+      "Name": "NewCaseBased_bilingual",
+      "Digest": "d30404ae5337e2ba6b6dbc00277a59f7",
+      "Type": 0,
+      "Version": "1.0.0.0",
+      "CreateDateTime": "2024-02-16 20:48:18.317",
+      "DefaultLangCode": "EN"
+    },
+    "Dir": ".",
+    "DbPath": "NewCaseBased_bilingual.sqlite",
+    "Extra": "{\n\"ModelDoc\": [\n   {\n   \"LangCode\": \"EN\",\n   \"Link\": \"NewCaseBased_bilingual.doc.EN.html\"\n   },\n   {\n   \"LangCode\": \"FR\",\n   \"Link\": \"NewCaseBased_bilingual.doc.FR.html\"\n   }\n]\n}\n"
+  },
+  {
+    "Model": {
+      "ModelId": 101,
+      "Name": "NewTimeBased",
+      "Digest": "b4f2100f8d308a5bd3bf3b470077d906",
+      "Type": 1,
+      "Version": "1.0.1.0",
+      "CreateDateTime": "2024-02-16 20:48:13.281",
+      "DefaultLangCode": "EN"
+    },
+    "Dir": ".",
+    "DbPath": "NewTimeBased.sqlite",
+    "Extra": "{\n\"ModelDoc\": [\n   {\n   \"LangCode\": \"EN\",\n   \"Link\": \"NewTimeBased.doc.EN.html\"\n   }\n]\n}\n"
+  },
+  {
+    "Model": {
+      "ModelId": 101,
+      "Name": "OzProj",
+      "Digest": "29a0e9769f04e0588be82141cd07b1f4",
+      "Type": 0,
+      "Version": "0.22.0.0",
+      "CreateDateTime": "2024-02-16 20:48:36.824",
+      "DefaultLangCode": "EN"
+    },
+    "Dir": "OzProj/ompp/bin",
+    "DbPath": "OzProj/ompp/bin/OzProj.sqlite",
+    "Extra": "{\n\"ModelDoc\": [\n   {\n   \"LangCode\": \"EN\",\n   \"Link\": \"OzProj.doc.EN.html\"\n   },\n   {\n   \"LangCode\": \"FR\",\n   \"Link\": \"OzProj.doc.FR.html\"\n   }\n]\n}\n"
+  },
+  {
+    "Model": {
+      "ModelId": 101,
+      "Name": "OzProjGen",
+      "Digest": "fe11d45922aed04c63f28f4a0b1d04bd",
+      "Type": 0,
+      "Version": "0.22.0.0",
+      "CreateDateTime": "2024-02-16 20:48:46.248",
+      "DefaultLangCode": "EN"
+    },
+    "Dir": "OzProjGen/ompp/bin",
+    "DbPath": "OzProjGen/ompp/bin/OzProjGen.sqlite",
+    "Extra": "{\n\"ModelDoc\": [\n   {\n   \"LangCode\": \"EN\",\n   \"Link\": \"OzProjGen.doc.EN.html\"\n   }\n]\n}\n"
+  },
+  {
+    "Model": {
+      "ModelId": 101,
+      "Name": "RiskPaths",
+      "Digest": "d90e1e9a49a06d972ecf1d50e684c62b",
+      "Type": 0,
+      "Version": "3.0.0.0",
+      "CreateDateTime": "2024-02-16 20:48:28.767",
+      "DefaultLangCode": "EN"
+    },
+    "Dir": ".",
+    "DbPath": "RiskPaths.sqlite",
+    "Extra": "{\n\"ModelDoc\": [\n   {\n   \"LangCode\": \"EN\",\n   \"Link\": \"RiskPaths.doc.EN.html\"\n   },\n   {\n   \"LangCode\": \"FR\",\n   \"Link\": \"RiskPaths.doc.FR.html\"\n   }\n]\n}\n"
+  },
+  {
+    "Model": {
+      "ModelId": 1,
+      "Name": "modelOne",
+      "Digest": "_201208171604590148_",
+      "Type": 0,
+      "Version": "1.0",
+      "CreateDateTime": "2012-08-17 16:04:59.148",
+      "DefaultLangCode": "EN"
+    },
+    "Dir": ".",
+    "DbPath": "modelOne.sqlite",
+    "Extra": ""
+  }
+]

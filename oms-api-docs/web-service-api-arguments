@@ -1,0 +1,29 @@
+Elaborate on what these argument types are.
+Check what the associated data types in oms or the ui are.
+
+<model>
+    Model digest or model name. 
+    In oms source code it's represented as string type.
+    Model digests appear to be strings of 32 alphanumeric characters.
+
+<lang>   
+    Language code. 
+    Existing language codes: EN, FR. 
+    If no language code is specified in requests that have a language code argument then the browser language setting is used.
+
+<run>     
+    Model run digest, run stamp or run name, modeling task run stamp or task run name.
+
+<set>    
+    Name of workset (input set of model parameters).
+    Workset is another name for model scenario.
+    Each model has a default scenario (created during model build process I think).
+
+<profile>
+    Profile name.
+    Something like a configuration file for how to run a specific model.
+    The settings specified in profiles are distinct from model parameter values specified in scenarios.
+
+<task>
+    Modeling task.
+    * Read more about and experiment with this setting.

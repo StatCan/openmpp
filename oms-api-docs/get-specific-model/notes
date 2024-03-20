@@ -1,0 +1,18 @@
+Command:
+    GET <domain name>/api/model/<model>
+        Where <model> is requested model name or model digest.
+        Model name may not be unique. 
+        Digests are unique identifiers consisting of 32 alphanumeric characters.
+
+Method:
+    main.modelMetaHandler
+
+Source file:
+    go/oms/handlerGet.go
+
+Key objects:
+    db.ModelMeta
+        Is a structure type that contains model information coming from the underlying database. It has structure type fields that correspond to rows in the database that describe various aspects of the model.
+    db.WorksetRow
+    main.ModelMetaUnpack   
+    main.jsonResponse       

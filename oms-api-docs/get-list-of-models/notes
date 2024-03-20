@@ -1,0 +1,11 @@
+Command:
+    GET <domain name>/api/model-list
+
+Method: 
+    main.modelListHandler
+
+Source file: 
+    go/oms/handlerGet.go
+
+Key objects being accessed:
+    main.theCatalog :: main.ModelCatalog

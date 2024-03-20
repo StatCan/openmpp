@@ -1,0 +1,20 @@
+{
+    "ModelName": "IDMM",
+    "ModelDigest": "bd5730c6aec4fe70d3da6d8f3386d3c9",
+    "ModelVersion": "2.0.0.0",
+    "ModelCreateDateTime": "2024-02-16 20:48:22.865",
+    "Name": "Default",
+    "BaseRunDigest": "",
+    "IsReadonly": true,
+    "UpdateDateTime": "2024-02-16 20:48:22.865",
+    "IsCleanBaseRun": false,
+    "Txt": [
+      {
+        "LangCode": "EN",
+        "Descr": "scenario",
+        "Note": ""
+      }
+    ],
+    "Param": []
+  }
+
