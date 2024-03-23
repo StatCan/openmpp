@@ -137,21 +137,11 @@ func main() {
 
     jobsFieldSelectorString := fields.
         AndSelectors(ns, fields.OneTermEqualSelector("name", submittedJobName)).String()
+    fmt.Println("Jobs field selector string: ", jobsFieldSelectorString)
 
     podsFieldSelectorString := fields.
         AndSelectors(ns, fields.OneTermEqualSelector("name", launcherPodName)).String()
-
-	// Obtain pods collection Watch interface.
-	podsWatcher, err := pods.
-        Watch(context.TODO(), meta.ListOptions{FieldSelector: podsFieldSelectorString})
-	if err != nil {
-		panic(err.Error())
-	} else {
-		fmt.Println("Obtained pods collection watch interface.")
-	}
-
-	// Obtain reference to Pods collection event channel.
-	podsChan := podsWatcher.ResultChan()
+    fmt.Println("Pods field selector string: ", podsFieldSelectorString)
 
 	// Obtain MPIJobs collection Watch interface.
 	mpiJobsWatcher, err := mpiJobs.
@@ -164,6 +154,27 @@ func main() {
 
 	// Obtain reference to MPIJobs collection event channel.
 	mpiJobsChan := mpiJobsWatcher.ResultChan()
+
+    // Pause for 2 seconds to give mpijob related pods chance to spin up in case
+    // that's necessary for the podsWatcher call to not error out.
+    time.Sleep(2 * time.Second)
+
+	// Obtain pods collection Watch interface.
+	podsWatcher, err := pods.
+        Watch(context.TODO(), meta.ListOptions{FieldSelector: podsFieldSelectorString})
+	if err != nil {
+		fmt.Println(err.Error())
+        if podsWatcher == nil {
+            fmt.Println("pods.Watch returned nil podsWatcher.")
+        }
+        fmt.Println("Pods watcher is not ready but we'll try to keep going.")
+	} else {
+		fmt.Println("Obtained pods collection watch interface.")
+	}
+
+	// Obtain reference to Pods collection event channel.
+	podsChan := podsWatcher.ResultChan()
+
 
 	// Create slice to store all possible job condition types.
 	jobConditionTypes := []kubeAPI.JobConditionType{

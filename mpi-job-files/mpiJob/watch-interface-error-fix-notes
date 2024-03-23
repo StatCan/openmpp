@@ -1,0 +1,10 @@
+Ideas:
+------
+x Upload to repository the instrumented version of the mpiJob built by delve compiler.
+    No, that's not gonna work, I'm pretty sure we need the dlv debugger to be installed on the machine that we're running the debug build on, because it runs the build on a delve debugger server. So without the server it's not going to work. 
+
+First change from invoking panic function to reading the error message being returned.
+Also check if the watch object being returned is nil or not.
+
+Another simple hack we can try is change the call order of pods.Watch and mpiJobs.Watch.
+
