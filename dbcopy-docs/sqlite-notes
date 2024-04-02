@@ -1,0 +1,84 @@
+SQLite is an embedded SQL database engine.
+Unlike most other SQL database engines SQLite does not have a separate server process.
+SQLite reads and writes directly to ordinary disk files.
+A complete SQL database, with multiple tables, views, indices, triggers is contained in a single disk file (common extensions are: .db, .sqlite, .sqlite3)
+
+Think of sqlite not as a replacement for Postgres, but as a replacement of standard stream based file access apis with a relational file access api.
+
+Some basics about the sqlite file format:
+    Consists of one or more pages.
+    The size of a page is a power of 2 between 512 and 65536 (bytes?)
+    But all pages within a single database file are the same size.
+    I'm assuming that as a database file gets larger it passes certain thresholds upon which the page size increases and the database gets repagineted.
+    Some pages are b-tree nodes.
+    Some pages are freelist nodes.
+
+Some basics about the sqlite3 command line shell:
+    Start shell into an existing database file:
+        sqlite3 <database filename>
+    List all tables:
+        .tables
+    Exit shell:
+        .exit
+    Otherwise just interact using SQL statements. For example:
+        SELECT * FROM TableDic;
+
+Output is formatted as per this example: 
+    0|T01_LifeExpectancy|Life Expectancy||1|-1|T01_LifeExpectancy.DimA|Quantity||0|0|0
+    0|T01_LifeExpectancy|Espérance de vie||1|-1|T01_LifeExpectancy.DimA|Quantité||0|0|1
+    1|T02_TotalPopulationByYear|Life table||2|0|T02_TotalPopulationByYear.DimA|Quantity||0|0|0
+    1|T02_TotalPopulationByYear|Table de mortalité||2|0|T02_TotalPopulationByYear.DimA|Quantité||0|0|1
+
+    One tuple per line,
+    Each field seperated by pipe character (|).
+
+Some basics about the generic database interface to SQL from golang:
+    database/sql package must be used in conjunction with a driver package.
+    
+Open is used to create a database handle:
+    db, err := sql.Open(driverName, dataSource)
+    db is of type database/sql.DB
+    DB is a structure type.
+    Represents a pool of zero or more connections.
+    It can be safely accessed by concurrent goroutines.
+    
+    Where driverName specifies a database driver. That driver must be registered with the go runtime (usually by an init block in the driver package that contains a call to sql.Register.)
+    
+    And dataSource specifies database-specific connection information, such as database name and authentication credentials.
+
+    Note that Open does not directly open a database connection. This is deferred until a query is made.
+
+To verify that a connection can be made before applying a query use the Ping or PingContext methods:
+        func (db *DB) Ping() error
+        func (db *DB) PingContext(ctx context.Context) error
+
+After use the database (handle?) is closed using Close function.
+
+Executing Queries:
+    Exec
+    ExecContext
+    func (db *DB) Query(query string, args ...any) (*Rows, error)
+        The query is typically a SELECT statement.
+        args are for any placeholder arguments in the query.
+        Recall that any is a type alias for interface{}.
+        That's weird, why are they not string type?
+
+    QueryContext
+    QueryRow
+    QueryRowContext
+
+Rows is a structure type.
+    It has a cursor so is something like an iterator through the result rows.
+    Does it have random access or just iteration? I think just iteration.
+    
+    Key methods of Rows type:
+    func (rs *Rows) Next() bool
+    func (rs *Rows) NextResultSet() bool
+    func (rs *Rows) Err() error
+    func (rs *Rows) Columns() ([]string, error)
+    func (rs *Rows) Scan(dest ...any) error
+
+
+
+And next we will jump-start our multimedia|PDXA web server component.
+    Maybe read one or two articles on go tool and go installation versus go workspaces.
