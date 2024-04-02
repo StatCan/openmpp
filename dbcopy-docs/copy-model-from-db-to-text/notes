@@ -1,0 +1,49 @@
+Operation:
+    Copy all data corresponding to a particular model (model metadata, scenarios, parameter tables, run results, output tables, tasks) from model database to a text archive (.json and .csv files).
+
+Command:
+    dbcopy -m <model name or digest> [-dbcopy.InputDir <directory where model database is located>] [-dbcopy.OutputDir <directory where text archive will be placed>]
+
+Comments:
+    If input directory is not specified then it's assumed that current working directory contains the sqlite database file that contains the model indicated by the -m option.
+
+    If model name is specified then dbcopy looks in current working directory for .sqlite files with matching name.
+
+    If model digest is specified then dbcopy looks inside all .sqlite files in current working directory for model with matching digest.
+
+    If output directory is not specified? ... Verify archive name in that case.
+
+
+Key packages, functions, and data structures:
+    config.New
+        Function that merges configuration arguments from ini file and arguments passed on command line.
+        Defined in auxiliary package "config" in source file: /go/ompp/config/config.go
+
+    main.dbToText
+        Function that handles the most common operation: copying entire model from database to text archive.
+        Defined in source file: go/dbcopy/dbToText.go
+
+    db.IfEmptyMakeDefaultReadOnly
+        Takes model name and two other runtime options as arguments. Not clear on what those represent.
+        Returns a connection string and database driver name.
+        During a step-through the values were:
+            dbConnStr = "Database=RiskPaths.sqlite; Timeout=86400; OpenMode=ReadOnly;"
+            dbDriver = "SQLite"
+
+    db.Open
+        Function opens database connection. It prepares arguments for the sql.Open function from the generic database package based on dbcopy configuration options.
+
+    sql.Open
+        The sql package is a generic database interface, and the Open function takes a pair of arguments: The first argument indicates which database driver to use, the second specifies the database connection string. The format of the second argument will depend on what type of database and driver you're using. Returns an instance of type sql.DB.
+
+    sql.DB
+        A database handle that represents a pool of zero or more underlying connections.
+
+    db.Facet
+        Is an enumeration (with underlying type uint8) that represents what type of database is being accessed: Sqlite, Postgres, MySql, MsSql, Oracle, Db2. ... Have to investigate further.
+
+    db.TrxSelectRows
+        Investigate this one. It has a function argument I think for handling row reads from different tables.
+
+    main.toModelJson
+        Function obtains model metadata from database and writes to json file.

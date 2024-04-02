@@ -1,0 +1,66 @@
+Had a first look at the source code files for dbcopy.
+
+Operations: copy, delete, rename, list.
+
+Sources: db, text (csv?)
+Destinations: db, csv
+
+Objects that can be operated on: Model, Model with additional metadata, Run, Run with additional metadata, Task, Workset.
+
+Arguments can be specified on command line or through .ini config file.
+Command line arguments override config file.
+Most arguments have default values and don't have to be specified.
+
+To list models contained in a given sqlite database. (Usually a single model, right?)
+    dbcopy -ls <path to sqlite model database>
+
+For all other operations the following argument is mandatory and specifies the model to be operated on:
+    -m <model name> |-dbcopy.ModelName <model name> |-dbcopy.ModelDigest <model digest>
+    It must be provided in one of its versions.
+
+    Clarification: When invoking dbcopy the database file that contains the requested model needs to be in the current working directory. You provide the model name as the argument value, not the database filename. So that's inconsistent with the list operation, where you specify the database filenam.
+
+    In the case of copying from a file archive, I think also the working directory needs to be set to the root directory of the model archive.
+
+This argument specifies the type of destination for a copy operation. 
+    -dbcopy.To {db | db2db | csv | csv-all | text?} 
+    The default is "text" (read from database into .json and .csv files)
+
+This specifies the copy output directory.
+    -dbcopy.OutputDir <directory name>
+
+This specifies input directory. 
+    -dbcopy.InputDir <directory name>
+    This lets you run dbcopy outside of working directory of the model.
+
+Some thoughts for how to approach this dbcopy learning activity:
+    Pick a couple of the most common main use cases:
+        Copy entire model from database into default output (json and csv)
+        The inverse operation
+        One other example
+
+    Create folders for each operation. Provide these details:
+        Example of input
+        Example of output
+        Stack traces
+        Key functions and data-structures.
+        Function call graph
+            Start experimenting with dot language syntax.
+            Just record the function invocations manually when stepping through the code:
+                packageA.function1 ---> packageB.function2
+                packageA.function1 ---> packageB.function3
+                etc.
+
+dbcopy uses .json files for model, scenario, and run metadata.
+It uses .csv files for parameter tables, output tables, and microdata output.
+
+Some notes on the golang generic sql package:
+    The sql package must be used in conjunction with at least one database driver.
+    Still trying to figure out the process of registering a database driver (with the runtime?)
+    sql.Open takes a driver name as argument.
+
+    sql.Register function is used to register drivers.
+
+    driver.Driver is an interface type that is defined in sql.driver package, and is implemented by packages that provide access to specific databases. 
+    The implementation must call sql.Register(<driver name>, <driver.Driver object>) to register its driver before it can be referenced via the generic api. 
+

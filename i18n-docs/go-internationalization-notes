@@ -1,0 +1,29 @@
+Several modules found that deal with internationalization:
+
+Several modules come up in go package search that use the i18n moniker but they appear to be personal projects outside of the golang organization: 
+    https://pkg.go.dev/github.com/nicksnyder/go-i18n/v2/i18n
+    https://pkg.go.dev/github.com/richardwilkes/toolbox/i18n
+    ...
+
+The following module doesn't refer to the i18n moniker, but some articles point to it as the module related to internationalization that's part of the golang organization suite of modules:
+    https://pkg.go.dev/golang.org/x/text
+    
+From module overview on pkg.go.dev: 
+    text is a repository of text-related packages related to internationalization and localization, such as character encodings, text transformations, and locale-specific text handling.
+
+    ...text/language
+        Implements BCP 47 language tags and related functionality
+
+    ...text/message
+        Implements formatted IO for localized strings with functions analogous to the fmt package's print functions.
+
+Reminder about modules placed under https://pkg.go.dev/golang.org/x:
+    They are part of the official Go Project, but outside the main Go standard library tree. They are held to looser standards than the standard library packages, and might not be subject to the "Go compatibility promise".
+
+There is a tool called gotext to automatically extract messages for translation from your code into json files.
+
+The alex edwards article we're reading will cover how to localize page content based on locale identifiers at the start of the URL paths of the web pages being requested.
+
+BCP 47 language tag: is a standardized code (like ISBN numbers) that is used to identify human languages on the internet. The tag structure has been standardized by the Internet Engineering Task Force.
+
+    Very loosely, language tags take the form: <language>-<region>
