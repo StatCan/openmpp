@@ -145,7 +145,9 @@ func main() {
 
 	// Obtain MPIJobs collection Watch interface.
 	mpiJobsWatcher, err := mpiJobs.
-        Watch(context.TODO(), meta.ListOptions{FieldSelector: jobsFieldSelectorString})
+        //Watch(context.TODO(), meta.ListOptions{FieldSelector: jobsFieldSelectorString})
+        // Trying without field selector:
+        Watch(context.TODO(), meta.ListOptions{})
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -161,7 +163,9 @@ func main() {
 
 	// Obtain pods collection Watch interface.
 	podsWatcher, err := pods.
-        Watch(context.TODO(), meta.ListOptions{FieldSelector: podsFieldSelectorString})
+        //Watch(context.TODO(), meta.ListOptions{FieldSelector: podsFieldSelectorString})
+        // Trying without field selector:
+        Watch(context.TODO(), meta.ListOptions{})
 	if err != nil {
 		fmt.Println(err.Error())
         if podsWatcher == nil {
