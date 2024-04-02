@@ -147,7 +147,7 @@ func main() {
 	mpiJobsWatcher, err := mpiJobs.
         Watch(context.TODO(), meta.ListOptions{FieldSelector: jobsFieldSelectorString})
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	} else {
 		fmt.Println("Obtained mpiJobs collection watch interface.")
 	}
