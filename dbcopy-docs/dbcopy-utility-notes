@@ -18,13 +18,15 @@ For all other operations the following argument is mandatory and specifies the m
     -m <model name> |-dbcopy.ModelName <model name> |-dbcopy.ModelDigest <model digest>
     It must be provided in one of its versions.
 
-    Clarification: When invoking dbcopy the database file that contains the requested model needs to be in the current working directory. You provide the model name as the argument value, not the database filename. So that's inconsistent with the list operation, where you specify the database filenam.
+    Clarification: When invoking dbcopy the database file that contains the requested model needs to be in the current working directory. You provide the model name as the argument value, not the database filename. So that's inconsistent with the list operation, where you specify the database filename.
 
     In the case of copying from a file archive, I think also the working directory needs to be set to the root directory of the model archive.
 
 This argument specifies the type of destination for a copy operation. 
     -dbcopy.To {db | db2db | csv | csv-all | text?} 
     The default is "text" (read from database into .json and .csv files)
+    I think "db" implies that we're copying from a text archive into a database.
+    The other ones all imply that we're copying from a database into whatever.
 
 This specifies the copy output directory.
     -dbcopy.OutputDir <directory name>
@@ -37,7 +39,7 @@ Some thoughts for how to approach this dbcopy learning activity:
     Pick a couple of the most common main use cases:
         Copy entire model from database into default output (json and csv)
         The inverse operation
-        One other example
+        One other example, maybe list models in database.
 
     Create folders for each operation. Provide these details:
         Example of input

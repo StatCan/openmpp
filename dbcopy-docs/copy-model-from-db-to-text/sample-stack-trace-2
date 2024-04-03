@@ -1,0 +1,19 @@
+0  0x0000000000679593 in github.com/openmpp/go/ompp/db.SelectRows
+   at /home/jacek/Projects/OpenM++/go/ompp/db/db.go:240
+1  0x00000000006af705 in github.com/openmpp/go/ompp/db.getRunLst
+   at /home/jacek/Projects/OpenM++/go/ompp/db/getRun.go:212
+2  0x00000000006b525d in github.com/openmpp/go/ompp/db.GetRunFullTextList
+   at /home/jacek/Projects/OpenM++/go/ompp/db/getRun.go:882
+3  0x00000000007b1b45 in main.toRunListText
+   at ./dbToTextRun.go:137
+4  0x00000000007ad075 in main.dbToText
+   at ./dbToText.go:74
+5  0x00000000007bf177 in main.mainBody
+   at ./dbcopy.go:587
+6  0x00000000007bc0d4 in main.main
+   at ./dbcopy.go:355
+7  0x0000000000445907 in runtime.main
+   at /usr/local/go/src/runtime/proc.go:267
+8  0x00000000004760a1 in runtime.goexit
+   at /usr/local/go/src/runtime/asm_amd64.s:1650
+

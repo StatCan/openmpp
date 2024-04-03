@@ -1,0 +1,13 @@
+0  0x00000000007ad914 in main.toModelJson
+   at ./dbToText.go:122
+1  0x00000000007acf91 in main.dbToText
+   at ./dbToText.go:56
+2  0x00000000007bf177 in main.mainBody
+   at ./dbcopy.go:587
+3  0x00000000007bc0d4 in main.main
+   at ./dbcopy.go:355
+4  0x0000000000445907 in runtime.main
+   at /usr/local/go/src/runtime/proc.go:267
+5  0x00000000004760a1 in runtime.goexit
+   at /usr/local/go/src/runtime/asm_amd64.s:1650
+

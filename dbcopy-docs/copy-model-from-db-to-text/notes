@@ -2,11 +2,9 @@ Operation:
     Copy all data corresponding to a particular model (model metadata, scenarios, parameter tables, run results, output tables, tasks) from model database to a text archive (.json and .csv files).
 
 Command:
-    dbcopy -m <model name or digest> [-dbcopy.InputDir <directory where model database is located>] [-dbcopy.OutputDir <directory where text archive will be placed>]
+    dbcopy -m <model name or digest> [-dbcopy.OutputDir <directory where text archive will be placed>]
 
 Comments:
-    If input directory is not specified then it's assumed that current working directory contains the sqlite database file that contains the model indicated by the -m option.
-
     If model name is specified then dbcopy looks in current working directory for .sqlite files with matching name.
 
     If model digest is specified then dbcopy looks inside all .sqlite files in current working directory for model with matching digest.
@@ -18,6 +16,9 @@ Key packages, functions, and data structures:
     config.New
         Function that merges configuration arguments from ini file and arguments passed on command line.
         Defined in auxiliary package "config" in source file: /go/ompp/config/config.go
+    
+    db.Facet
+        Is an enumeration (with underlying type uint8) that represents what type of database is being accessed: Sqlite, Postgres, MySql, MsSql, Oracle, Db2. ... Have to investigate further.
 
     main.dbToText
         Function that handles the most common operation: copying entire model from database to text archive.
@@ -39,11 +40,66 @@ Key packages, functions, and data structures:
     sql.DB
         A database handle that represents a pool of zero or more underlying connections.
 
-    db.Facet
-        Is an enumeration (with underlying type uint8) that represents what type of database is being accessed: Sqlite, Postgres, MySql, MsSql, Oracle, Db2. ... Have to investigate further.
+    db.GetModel
+        db.GetModelId
+        db.GetModelById
+            db.getModel
+                Creates pointer to a local variable of type db.ModelMeta.
+                Invokes function SelectRows to get various portions of model metadata.
+                
+    db.SelectRows
+        This function appears to do the bulk of database reads.
+        It's called 78 times, several times in each of the db.Get<something> methods.
+        Arguments: 
+            database connection object, of type sql.DB
+            query string
+            function with type signature: (rows *sql.Rows) error
+                These functions are defined inside the argument block of each invocation of SelectRows.
+                Each invocation has a different definition.
+                Each of these functions defines a collection of local variables with types that correspond to the column types of the rows they expect to receive as arguments.
+                Each function calls Scan on the argument row, passing pointers to the collection of local arguments it defined beforehand. The values from the argument row get passed into these local arguments.
+                
+                Also these argument functions include references to the root data structure that's being built up. So for example calls of SelectRows in db.getModel have the argument function referring to the db.ModelMeta variable defined in outer scope. These variables get captured as function closures instead of being passed as arguments. 
 
     db.TrxSelectRows
-        Investigate this one. It has a function argument I think for handling row reads from different tables.
+        This one looks almost the same as db.SelectRows.
+        The difference appears to be that instead of getting passed a sql.DB connection argument it gets passed a sql.Tx database transaction argument.
 
-    main.toModelJson
-        Function obtains model metadata from database and writes to json file.
+    db.ModelMeta
+        Source file: go/ompp/db/dbModel.go
+        Is a structure type representing how model metadata is stored in the database.
+        db.TypeMeta
+            Its the auxiliary type definitions that are part of the model source code, not golang types.
+        db.ParamMeta
+        db.TableMeta
+            Output table metadata: the table name, dimensions, accumulators, expressions.
+            db.TableDicRow
+                This is a structure type whose fields are all simple types.
+                It represents the column types of a JOIN of table_dic and model_table_dic tables.
+                ModelId int
+                TableId int
+                TableHid int
+                Name string
+                ...
+            db.TableDimsRow
+                This is another structure type whose fields are all simple types.
+                It represents the column types of a JOIN of table_dic_txt and model_table_dic tables.
+                ModelId int
+                TableId int
+                LangCode string
+                Descr string
+                ...
+            db.TableAccRow
+            db.TableExprRow
+        db.EntityMeta
+        db.GroupMeta
+
+    db.ModelTxtMeta
+        Is a structure type representing how the language-specific portion of model metadata is stored in the database.
+    
+    These are called in sequence after obtaining the model metadata.
+        main.toModelJson
+        main.toRunListText
+        main.toWorksetListText
+        main.toTaskListJson
+
