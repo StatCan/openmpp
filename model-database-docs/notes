@@ -27,4 +27,8 @@ Review what a database index is:
     Database systems often implicitly create an index based on the subset of columns that is declared a table's primary key. Additional indexes may be created for the table, for instance based on secondary keys.
     Indexes are meant to enable sub-linear time lookups. Versus linear time lookups when the entire table is scanned row by row.
 
-   
+Some tools related to sqlite databases:
+---------------------------------------
+DB browser for SQLite: https://sqlitebrowser.org
+    This tool displays sqlite database contents in a spreadsheet format.
+    
