@@ -1,0 +1,30 @@
+Brainstorming how to process the table lists to obtain good insight into the OpenM database design.
+
+Some notes on system tables in sqlite:
+--------------------------------------
+sqlite_schema
+    Is created upon database creation and modifies its content as SQLite users submit statements for execution on non-system tables. There is no need for users to modify it under normal circumstances.
+    Columns:
+        type
+            One of the following text strings: table, view, index, trigger.
+        name
+            The name of the object.
+        tbl_name
+            The name of the table or view that this object is associated with.
+            For a table or view object this entry will be the same value as in the name column.
+        rootpage
+            For table and index objects holds the page number of the root b-tree page.
+            For other objects the rootpage is set to 0 or NULL.
+        sql
+            Stores SQL text that describes the object.
+            Is usually a copy of the orginal statement used to create the object but with some statement normalization operations applied (conversion to upper case, elimination of white space, ect.)
+
+We can use sqlite_schema.sql to obtain table information for tables.
+    SELECT sql FROM sqlite_schema WHERE name = '<table name>'
+
+Review what a database index is:
+    Is an auxiliary data structure that speeds up data retrieval operations on an associated table.
+    Database systems often implicitly create an index based on the subset of columns that is declared a table's primary key. Additional indexes may be created for the table, for instance based on secondary keys.
+    Indexes are meant to enable sub-linear time lookups. Versus linear time lookups when the entire table is scanned row by row.
+
+   
