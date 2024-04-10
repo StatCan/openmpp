@@ -1,0 +1,1 @@
+CREATE TABLE entity_gen ( entity_gen_hid  INT         NOT NULL,  entity_hid      INT         NOT NULL,  db_entity_table VARCHAR(64) NOT NULL,  gen_digest      VARCHAR(32) NOT NULL,  PRIMARY KEY (entity_gen_hid), CONSTRAINT entity_gen_un UNIQUE (db_entity_table), CONSTRAINT entity_gen_fk FOREIGN KEY (entity_hid) REFERENCES entity_dic (entity_hid) )

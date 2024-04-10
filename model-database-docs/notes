@@ -32,3 +32,6 @@ Some tools related to sqlite databases:
 DB browser for SQLite: https://sqlitebrowser.org
     This tool displays sqlite database contents in a spreadsheet format.
     
+graphviz: https://graphviz.org/
+    Creates diagrams of things that are expressed as graphs.
+    Will use this to create model database schema diagrams that will show foreign key constraints.

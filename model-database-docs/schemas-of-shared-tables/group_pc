@@ -1,0 +1,1 @@
+CREATE TABLE group_pc ( model_id       INT NOT NULL,  group_id       INT NOT NULL,  child_pos      INT NOT NULL,  child_group_id INT NULL,      leaf_id        INT NULL,      PRIMARY KEY (model_id, group_id, child_pos), CONSTRAINT group_pc_mk FOREIGN KEY (model_id, group_id) REFERENCES group_lst (model_id, group_id) )

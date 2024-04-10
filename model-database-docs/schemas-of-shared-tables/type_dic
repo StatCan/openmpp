@@ -1,0 +1,1 @@
+CREATE TABLE type_dic ( type_hid      INT          NOT NULL,  type_name     VARCHAR(255) NOT NULL,  type_digest   VARCHAR(32)  NOT NULL,  dic_id        INT          NOT NULL,  total_enum_id INT          NOT NULL,  PRIMARY KEY (type_hid), CONSTRAINT type_dic_un UNIQUE (type_digest) )

@@ -1,0 +1,1 @@
+CREATE TABLE entity_dic ( entity_hid    INT          NOT NULL,  entity_name   VARCHAR(255) NOT NULL,  entity_digest VARCHAR(32)  NOT NULL,  PRIMARY KEY (entity_hid), CONSTRAINT entity_dic_un UNIQUE (entity_digest) )

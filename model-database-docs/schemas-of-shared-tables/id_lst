@@ -1,0 +1,1 @@
+CREATE TABLE id_lst ( id_key   VARCHAR(32) NOT NULL,  id_value INT         NOT NULL,  PRIMARY KEY (id_key) )

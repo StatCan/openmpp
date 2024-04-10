@@ -1,0 +1,1 @@
+CREATE TABLE model_word ( model_id   INT          NOT NULL,  lang_id    INT          NOT NULL,  word_code  VARCHAR(255) NOT NULL,  word_value VARCHAR(255) NULL,      PRIMARY KEY (model_id, lang_id, word_code), CONSTRAINT model_word_mk FOREIGN KEY (model_id) REFERENCES model_dic (model_id), CONSTRAINT model_word_fk FOREIGN KEY (lang_id) REFERENCES lang_lst (lang_id) )

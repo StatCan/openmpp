@@ -1,0 +1,1 @@
+CREATE TABLE group_lst ( model_id     INT          NOT NULL,  group_id     INT          NOT NULL,  is_parameter SMALLINT     NOT NULL,  group_name   VARCHAR(255) NOT NULL,  is_hidden    SMALLINT     NOT NULL,  PRIMARY KEY (model_id, group_id), CONSTRAINT group_lst_un UNIQUE (model_id, group_name), CONSTRAINT group_lst_mk FOREIGN KEY (model_id) REFERENCES model_dic (model_id) )

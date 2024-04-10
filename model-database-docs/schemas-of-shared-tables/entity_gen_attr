@@ -1,0 +1,1 @@
+CREATE TABLE entity_gen_attr ( entity_gen_hid INT NOT NULL,  attr_id        INT NOT NULL,  entity_hid     INT NOT NULL,  PRIMARY KEY (entity_gen_hid, attr_id), CONSTRAINT entity_gen_attr_mk FOREIGN KEY (entity_gen_hid) REFERENCES entity_gen (entity_gen_hid), CONSTRAINT entity_gen_attr_fk FOREIGN KEY (entity_hid, attr_id) REFERENCES entity_attr (entity_hid, attr_id) )
