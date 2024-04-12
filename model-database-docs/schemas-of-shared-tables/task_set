@@ -1,0 +1,1 @@
+CREATE TABLE task_set ( task_id INT NOT NULL,  set_id  INT NOT NULL,  PRIMARY KEY (task_id, set_id), CONSTRAINT task_set_mk FOREIGN KEY (task_id) REFERENCES task_lst (task_id), CONSTRAINT task_set_fk FOREIGN KEY (set_id) REFERENCES workset_lst (set_id) )

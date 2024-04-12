@@ -1,0 +1,1 @@
+CREATE TABLE task_lst ( task_id   INT          NOT NULL,  model_id  INT          NOT NULL,  task_name VARCHAR(255) NOT NULL,  PRIMARY KEY (task_id), CONSTRAINT task_lst_un UNIQUE (model_id, task_name), CONSTRAINT task_lst_mk FOREIGN KEY (model_id) REFERENCES model_dic (model_id) )

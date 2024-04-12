@@ -1,0 +1,192 @@
+digraph alt_database_schema_diagram {
+    "entity_attr" [label = "entity_attr"]
+    "entity_attr_txt" [label = "entity_attr_txt"]
+    "entity_dic" [label = "entity_dic"]
+    "entity_dic_txt" [label = "entity_dic_txt"]
+    "entity_gen"
+    "entity_gen_attr"
+    "group_lst"
+    "group_pc"
+    "group_txt"
+    "id_lst"
+    "lang_lst"
+    "lang_word"
+    "model_dic"
+    "model_dic_txt"
+    "model_entity_dic"
+    "model_parameter_dic"
+    "model_parameter_import"
+    "model_table_dic"
+    "model_type_dic"
+    "model_word"
+    "parameter_dic"
+    "parameter_dic_txt"
+    "parameter_dims"
+    "parameter_dims_txt"
+    "profile_lst"
+    "profile_option"
+    "run_entity"
+    "run_lst"
+    "run_option"
+    "run_parameter"
+    "run_parameter_import"
+    "run_parameter_txt"
+    "run_progress"
+    "run_table"
+    "run_txt"
+    "table_acc"
+    "table_acc_txt"
+    "table_dic"
+    "table_dic_txt"
+    "table_dims"
+    "table_dims_txt"
+    "table_expr"
+    "table_expr_txt"
+    "task_lst"
+    "task_run_lst"
+    "task_run_set"
+    "task_set"
+    "task_txt"
+    "type_dic"
+    "type_dic_txt"
+    "type_enum_lst"
+    "type_enum_txt"
+    "workset_lst"
+    "workset_parameter"
+    "workset_parameter_txt"
+    "workset_txt"
+
+    "entity_attr" -> "entity_dic"
+    "entity_attr" -> "type_dic"
+
+    "entity_attr_txt" -> "entity_attr"
+    "entity_attr_txt" -> "lang_lst"
+
+    "entity_dic_txt" -> "entity_dic"
+    "entity_dic_txt" -> "lang_lst"
+
+    "entity_gen" -> "entity_dic"
+
+    "entity_gen_attr" -> "entity_gen"
+    "entity_gen_attr" -> "entity_attr"
+
+    "group_lst" -> "model_dic"
+
+    "group_pc" -> "group_lst"
+
+    "group_txt" -> "lang_lst"
+    "group_txt" -> "group_lst"
+
+    "lang_word" -> "lang_lst"
+
+    "model_dic" -> "lang_lst"
+
+    "model_dic_txt" -> "model_dic"
+    "model_dic_txt" -> "lang_lst"
+
+    "model_entity_dic" -> "entity_dic"
+    "model_entity_dic" -> "model_dic"
+
+    "model_parameter_dic" -> "parameter_dic"
+    "model_parameter_dic" -> "model_dic"
+
+    "model_parameter_import" -> "model_parameter_dic"
+
+    "model_table_dic" -> "table_dic"
+    "model_table_dic" -> "model_dic"
+
+    "model_type_dic" -> "type_dic"
+    "model_type_dic" -> "model_dic"
+
+    "model_word" -> "model_dic"
+    "model_word" -> "lang_lst"
+
+    "parameter_dic" -> "type_dic"
+    
+    "parameter_dic_txt" -> "parameter_dic"
+    "parameter_dic_txt" -> "lang_lst"
+
+    "parameter_dims" -> "parameter_dic"
+    "parameter_dims" -> "type_dic"
+
+    "parameter_dims_txt" -> "parameter_dims"
+    "parameter_dims_txt" -> "lang_lst"
+
+    "profile_option" -> "profile_lst"
+    
+    "run_entity" -> "run_lst"
+    "run_entity" -> "entity_gen"
+
+    "run_lst" -> "model_dic"
+
+    "run_option" -> "run_lst"
+
+    "run_parameter" -> "run_lst"
+    "run_parameter" -> "parameter_dic"
+
+    "run_parameter_import" -> "run_parameter"
+
+    "run_parameter_txt" -> "run_lst"
+    "run_parameter_txt" -> "parameter_dic"
+    "run_parameter_txt" -> "lang_lst"
+
+    "run_progress" -> "run_lst"
+
+    "run_table" -> "run_lst"
+    "run_table" -> "table_dic"
+
+    "run_txt" -> "run_lst"
+    "run_txt" -> "lang_lst"
+
+    "table_acc" -> "table_dic"
+
+    "table_acc_txt" -> "table_acc"
+    "table_acc_txt" -> "lang_lst"
+
+    "table_dic_txt" -> "table_dic"
+    "table_dic_txt" -> "lang_lst"
+
+    "table_dims" -> "table_dic"
+    "table_dims" -> "type_dic"
+
+    "table_dims_txt" -> "table_dims"
+    "table_dims_txt" -> "lang_lst"
+
+    "table_expr" -> "table_dic"
+
+    "table_expr_txt" -> "table_expr"
+    "table_expr_txt" -> "lang_lst"
+
+    "task_lst" -> "model_dic"
+
+    "task_run_lst" -> "task_lst"
+
+    "task_run_set" -> "task_run_lst"
+
+    "task_set" -> "task_lst"
+    "task_set" -> "workset_lst"
+
+    "task_txt" -> "task_lst"
+    "task_txt" -> "lang_lst"
+
+    "type_dic_txt" -> "type_dic"
+    "type_dic_txt" -> "lang_lst"
+
+    "type_enum_lst" -> "type_dic"
+
+    "type_enum_txt" -> "type_dic"
+    "type_enum_txt" -> "lang_lst"
+
+    "workset_lst" -> "model_dic"
+    "workset_lst" -> "run_lst"
+
+    "workset_parameter" -> "workset_lst"
+    "workset_parameter" -> "parameter_dic"
+
+    "workset_parameter_txt" -> "workset_parameter"
+    "workset_parameter_txt" -> "lang_lst"
+
+    "workset_txt" -> "workset_lst"
+    "workset_txt" -> "lang_lst"
+
+}

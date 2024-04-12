@@ -35,3 +35,8 @@ DB browser for SQLite: https://sqlitebrowser.org
 graphviz: https://graphviz.org/
     Creates diagrams of things that are expressed as graphs.
     Will use this to create model database schema diagrams that will show foreign key constraints.
+
+Idea for getting all the foreign key constraints using existing command line tools: grep --with-filename "FOREIGN_KEY" * > foreign-keys
+Problem is that the table schema files are all one liners, so we need a more intelligent parses than matching by line. 
+
+

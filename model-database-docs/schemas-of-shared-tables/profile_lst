@@ -1,0 +1,1 @@
+CREATE TABLE profile_lst ( profile_name VARCHAR(255) NOT NULL,  PRIMARY KEY (profile_name) )

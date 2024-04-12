@@ -1,0 +1,43 @@
+digraph RiskPaths_database_schema {
+  "table_dic" [
+    label = "{table_dic | <c1> table_hid       INT |          NOT NULL |  table_name      VARCHAR(255) NOT NULL |  table_digest    VARCHAR(32)  NOT NULL |  table_rank      INT          NOT NULL |  is_sparse       SMALLINT     NOT NULL |  db_expr_table   VARCHAR(64)  NOT NULL |  db_acc_table    VARCHAR(64)  NOT NULL |  db_acc_all_view VARCHAR(64)  NOT NULL |  import_digest   VARCHAR(32)  NOT NULL}"
+    shape = "record"
+  ]
+
+  "model_table_dic" [
+    label = "{model_table_dic | <c1> model_id       INT      NOT NULL|  model_table_id INT      NOT NULL|<c3> table_hid      INT      NOT NULL|  is_user        SMALLINT NOT NULL|  expr_dim_pos   INT      NOT NULL|  is_hidden      SMALLINT NOT NULL}"
+    shape = "record"
+  ]           
+
+  "model_dic" [
+    label = "{model_dic | <c1> model_id        INT          NOT NULL|  model_name      VARCHAR(255) NOT NULL|  model_digest    VARCHAR(32)  NOT NULL|  model_type      INT          NOT NULL|  model_ver       VARCHAR(32)  NOT NULL|  create_dt       VARCHAR(32)  NOT NULL|  default_lang_id INT          NOT NULL}"
+    shape = "record"
+  ]                  
+
+  "run_lst"[
+    label = "{run_lst | <c1> run_id        INT          NOT NULL| <c2> model_id      INT          NOT NULL|  run_name      VARCHAR(255) NOT NULL|  sub_count     INT          NOT NULL|  sub_started   INT          NOT NULL|  sub_completed INT          NOT NULL|  sub_restart   INT          NOT NULL|  create_dt     VARCHAR(32)  NOT NULL|  status        VARCHAR(1)   NOT NULL|  update_dt     VARCHAR(32)  NOT NULL|  run_digest    VARCHAR(32)  NOT NULL|  value_digest  VARCHAR(32)|            run_stamp     VARCHAR(32)  NOT NULL  }"
+    shape = "record"
+  ]                  
+
+  "run_table"[
+    label = "{run_table | <c1> run_id       INT         NOT NULL|  <c2> table_hid    INT         NOT NULL|  base_run_id  INT         NOT NULL|  value_digest VARCHAR(32)  }"
+    shape = "record"
+  ]
+
+  "workset_lst" [
+    label = "{workset_lst | set_id      INT          NOT NULL| <c1>  base_run_id INT| <c2> model_id    INT          NOT NULL|  set_name    VARCHAR(255) NOT NULL|  is_readonly SMALLINT     NOT NULL|  update_dt   VARCHAR(32)  NOT NULL  }"
+    shape = "record"
+  ]                  
+
+  "model_table_dic":c1 -> "model_dic":c1
+  "model_table_dic":c3 -> "table_dic":c1
+
+  "run_table":c2 -> "table_dic":c1
+  "run_table":c1 -> "run_lst":c1
+
+  "run_lst":c2 -> "model_dic":c1
+
+  "workset_lst":c2 -> "model_dic":c1
+  "workset_lst":c1 -> "run_lst":c1
+}
+

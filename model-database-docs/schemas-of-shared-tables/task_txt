@@ -1,0 +1,1 @@
+CREATE TABLE task_txt ( task_id INT             NOT NULL,  lang_id INT             NOT NULL,  descr   VARCHAR(255)    NOT NULL,  note    VARCHAR(32000),            PRIMARY KEY (task_id, lang_id), CONSTRAINT task_txt_mk FOREIGN KEY (task_id) REFERENCES task_lst(task_id), CONSTRAINT task_txt_lang FOREIGN KEY (lang_id) REFERENCES lang_lst (lang_id) )

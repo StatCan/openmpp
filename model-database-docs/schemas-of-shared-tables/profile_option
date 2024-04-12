@@ -1,0 +1,1 @@
+CREATE TABLE profile_option ( profile_name VARCHAR(255)   NOT NULL,  option_key   VARCHAR(255)   NOT NULL,  option_value VARCHAR(32000) NOT NULL,  PRIMARY KEY (profile_name, option_key), CONSTRAINT profile_option_mk FOREIGN KEY (profile_name) REFERENCES profile_lst(profile_name) )
