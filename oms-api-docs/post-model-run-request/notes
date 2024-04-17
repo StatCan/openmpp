@@ -22,4 +22,42 @@ Source code file:
 Key objects and functions:
     main.RunCatalog
     main.(*RunCatalog).runModel
+        Sets work directory and model executable directory and log directory.
+        Prepares model run command line arguments including run options.
+        Invokes makeCommand method of the run catalog.
+    main.(*RunCatalog).makeCommand    
 
+    os/exec.Command
+    (*Command).StdoutPipe
+    (*Command).Start
+
+Some comments about this command object defined in os/exec:
+    func os/exec.Command(name string, arg ...string) *Cmd
+        Returns a Cmd struct that can then be used to execute the named program with provided arguments.
+        Path and Args fields in the Cmd structure are passed the name and arg argument values.
+    
+    Cmd includes fields named Stdin, Stdout, Stderr.
+    I'm not sure if they're settable or read only.
+    Question: Can I write to this process'es standard input?
+    If I read from its standard output, are those blocks unavailable to other readers?
+    Some stackoverflow comments imply that yes, you can connect multiple processes to the same input and|or output streams. The results are usually not useful because there are no (de)multiplexing operations being done.
+
+Once created an instance of os/exec.Cmd there are several ways to invoke the command.
+    Cmd.Environ
+        Returns a copy of the environment in which the command would be run as it is currently configured.
+    Cmd.Run
+        Runs the specified command and waits for it to complete.
+    Cmd.Start
+        Starts the specified command but does not wait for it to complete.
+        After a successful Start call, the Wait method on the same command object must be called in order to release associated system resources.
+    Cmd.Wait
+        The process represented by the command must have been started with Start before calling Wait.
+        Waits for the command to exit and waits for any pending reads from stdin and writes to stdout and stderr to complete before returning.
+        Wait releases any system resources associated with the command.
+    Cmd.Output
+        Executes the command and returns its standard output. (?)
+        The return value is []byte, not io.Reader.
+        So this is a static, finite set of bytes. right?
+    Cmd.CombinedOutput
+        Executes the command and returns combined standard output and standard error output. (?)
+    
