@@ -60,4 +60,9 @@ Once created an instance of os/exec.Cmd there are several ways to invoke the com
         So this is a static, finite set of bytes. right?
     Cmd.CombinedOutput
         Executes the command and returns combined standard output and standard error output. (?)
-    
+
+
+Some other objects to investigate:
+    RunState
+        Represents a (active?) model run.
+    RunCatalog
