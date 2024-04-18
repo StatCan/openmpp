@@ -20,8 +20,7 @@ spec:
             sidecar.istio.io/inject: "false" # Init container conflicts with istio.
         spec:
           containers:
-          - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:0f80cf47bb5d6f6e025990e511b72be614bbcf7c
-            # There must be a better way than just hardcoding these image names in here, right?
+          - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:c6a1cb9eb74ec1c8cac268a66313d0db9fad651b
             name: #<mpiJobName>-launcher
             command:
             - mpirun
@@ -47,8 +46,7 @@ spec:
             sidecar.istio.io/inject: "false" # Init container conflicts with istio.
         spec:
           containers:
-          - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:0f80cf47bb5d6f6e025990e511b72be614bbcf7c
-            # Same as above, I don't think this should be hardcoded in like this.
+          - image: k8scc01covidacr.azurecr.io/ompp-run-ubuntu:c6a1cb9eb74ec1c8cac268a66313d0db9fad651b
             name: #<mpiJobName>-worker
             resources:
                 limits:
@@ -59,11 +57,11 @@ spec:
                   memory: 4Gi
             volumeMounts:
             - mountPath: /home/jovyan/mpi-test
-              name: mpi-test
+              name: mpi-test-nfs
           volumes:
-          - name: mpi-test
+          - name: mpi-test-nfs
             persistentVolumeClaim:
-              claimName: mpi-test
+              claimName: mpi-test-nfs
 
             # In the tensorflow example there are volume and volume mount definitions for the worker pods.
             # I don't think this is necessary if the container images used in the worker pod definitions
