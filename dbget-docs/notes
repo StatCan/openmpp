@@ -1,0 +1,78 @@
+dbget is a command line tool to export OpenM++ model metadata.
+Question: Does dbcopy not already do that? It supports the same operations.
+
+Review package level constants, as they are used in packages for dbget, dbcopy, and oms.
+
+Going over some config and command line options:
+    dbget.Do | do
+        Specify the action to perform.
+        Actions specified in examples: 
+            model-list
+            microdata-compare
+            microdata-aggregate
+        From the source code it looks like these are all the actions defined.
+        It looks like other command line arguments need to be provided together with the action argument in order for the command to make sense.
+        For example with action microdata-aggregate we need to specify how to aggregate using dbget.GroupBy.
+
+    dbget.Sqlite | db
+        Path to input sqlite database. 
+
+    These two options imply that other database types can be used.
+    We will need to investigate how these options get handled in the code.
+    dbget.Database
+        Database connection string.
+    dbget.DatabaseDriver
+        Database driver name.
+
+    dbget.File | f
+        Specify output filename.
+        What happens when there are multiple files to be produced?
+
+    dbget.Dir | dir
+        Specify output directory.
+
+    dbget.ModelName | m
+        Specify model name.
+
+    dbget.ModelDigest
+        Specify model, but using digest instead of name.
+
+    Some options for specifying from which run to obtain data:
+        dbget.Run
+        dbget.RunId
+        dbget.FirstRun
+        dbget.LastRun 
+
+    Some other options for specifying microdata related details:
+        Not sure what these are referring to. 
+        dbget.Entity
+            Which microdata entity to get. (?)
+        dbget.GroupBy
+            (?)
+        dbget.Calc
+            What expressions to compare or aggregate.
+
+
+    Some other options to specify preferred language and formatting and source encoding:
+        dbget.Language | lang
+        dbget.DoubleFormat
+        dbget.CodePage
+
+Going over some usage examples in source code comments:
+    Get list of models from database:
+        dbget -db modelOne.sqlite -do model-list
+
+    Aggregate microdata values from a model run:
+        dbget -db test/modelOne.sqlite \
+        -do microdata-aggregate \
+        -m modelOne \
+        -dbget.WithRunIds 219,221 \
+        -dbget.Entity Other \
+        -dbget.GroupBy AgeGroup \
+        -dbget.Calc OM_AVG(Income)
+
+It's a pain to step through large function bodies with a lot of routine statements.
+Use this delve command to set breakpoint in a specific source file, on a specific line:
+    (dlv) break <source file name>:<line number>
+
+
