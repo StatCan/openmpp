@@ -1,5 +1,6 @@
 dbget is a command line tool to export OpenM++ model metadata.
 Question: Does dbcopy not already do that? It supports the same operations.
+A: This tool appears to offer additional operations on model run microdata.
 
 Review package level constants, as they are used in packages for dbget, dbcopy, and oms.
 
@@ -27,9 +28,11 @@ Going over some config and command line options:
     dbget.File | f
         Specify output filename.
         What happens when there are multiple files to be produced?
+        Maybe a root output directory is created with that name?
 
     dbget.Dir | dir
         Specify output directory.
+        How does this one play with the f option?
 
     dbget.ModelName | m
         Specify model name.
@@ -37,7 +40,8 @@ Going over some config and command line options:
     dbget.ModelDigest
         Specify model, but using digest instead of name.
 
-    Some options for specifying from which run to obtain data:
+    Some options for specifying from which run to obtain (micro?)data.
+    Microdata is produced during model runs and so, when running microdata-compare or microdata-aggregrate, run(s) from which to obtain the microdata must be specified otherwise what would be returned?
         dbget.Run
         dbget.RunId
         dbget.FirstRun
@@ -58,21 +62,134 @@ Going over some config and command line options:
         dbget.DoubleFormat
         dbget.CodePage
 
+
+
 Going over some usage examples in source code comments:
     Get list of models from database:
         dbget -db modelOne.sqlite -do model-list
 
     Aggregate microdata values from a model run:
-        dbget -db test/modelOne.sqlite \
-        -do microdata-aggregate \
-        -m modelOne \
-        -dbget.WithRunIds 219,221 \
-        -dbget.Entity Other \
-        -dbget.GroupBy AgeGroup \
-        -dbget.Calc OM_AVG(Income)
+        dbget -db test/modelOne.sqlite 
+            -do microdata-aggregate 
+            -m modelOne 
+            -dbget.WithRunIds 219,221 
+            -dbget.Entity Other 
+            -dbget.GroupBy AgeGroup 
+            -dbget.Calc OM_AVG(Income)
+
+    Compare microdata run values:
+        dbget -db modelOne.sqlite -do microdata-compare
+            -m modelOne 
+            -dbget.RunId 219 
+            -dbget.WithRunIds 221 
+            -dbget.Entity Person 
+            -dbget.GroupBy AgeGroup 
+            -dbget.Calc OM_AVG(Income[base]-Income[variant]) 
+
+    Aggregate and compare microdata run values:
+        dbget -db test\modelOne.sqlite -do microdata-aggregate
+            -m modelOne
+            -dbget.RunId 219
+            -dbget.WithRunIds 221
+            -dbget.Entity Other
+            -dbget.GroupBy AgeGroup
+            -dbget.Calc OM_AVG(Income),OM_AVG(Income[base]-Income[variant])  
+
 
 It's a pain to step through large function bodies with a lot of routine statements.
 Use this delve command to set breakpoint in a specific source file, on a specific line:
     (dlv) break <source file name>:<line number>
 
 
+Where is WithRunIds explained? Why do we have WithRunIds and also RunId?
+Any more explanation that we can find for: WithRunIds, Entity, GroupBy, Calc?
+    We can try to grep for whatever the corresponding in-code variables are and see what they're used for.
+    Actually they're all defined as members of a map, with the keys defined as package level constants.
+        dbget.Run          : runArgKey
+        dbget.RunId        : runIdArgKey
+        dbget.FirstRun     : runFirstArgKey
+        dbget.LastRun      : runLastArgKey
+        dbget.WithRuns     : withRunsArgKey
+        dbget.WithRunIds   : withRunIdsArgKey
+        dbget.WithFirstRun : withRunFirstArgKey
+        dbget.WithLastRun  : withRunLastArgKey
+        dbget.Entity       : entityArgKey
+        dbget.GroupBy      : groupByArgKey      
+        dbget.Calc         : calcArgKey
+
+runOpts <- config.New
+runOpts is of type RunOptions.
+RunOptions is a structure with a pair of map[string][string] fields.
+
+theCfg is a structure with fields defined for the most common configuration options, with values copied over from runOpts into theCfg.
+
+Key functions called depending on operation requested via dbget.Do option.
+    modelList
+        Called when dbget.Do is set to model-list.
+    microdataAggregate (srcDb *sql.DB, modelId int, isCompare bool, runOpts *config.RunOptions) error
+        srcDb is the required database handle 
+        isCompare specifies whether to compare or aggregate
+        Called for both microdata-aggregate and microdata-compare with isCompare set appropriately.
+
+        Return value is an error. The actual output is written to file with paths specified in command line or config file options.
+
+        Calls findRun to obtain base model run.
+        func findRun (srcDb *sql.DB, modelId int, rdsn string, runId int, isFirst, isLast bool) (string, *db.RunRow, error)
+            srcDb is the database handle
+            rdsn is the requested model run name, stamp, or digest.
+            runId (?) I thought run digest was the main identifier, but apparently this is another identifier.
+            
+            The return values are:
+                string is a message (whether run was obtained or not?)
+                *db.RunRow is a struct type with fields corresponding to information about the requested run as stored in the database.
+                    RunId
+                    ModelId: Which model the run is based on.
+                    RunDigest: Another identifier
+                    RunStamp: another identifier?
+                    Status: whether completed or running (or failed?)
+                    SubCount: Number of sub-values in this run.
+
+        Model run variants
+            Comment inside function body says: Make a list of variant model runs.
+            (?) What are model run variants?
+            I think run variants are the model runs being indicated with dbget.WithRuns, dbget.WithRunIds, dbget.WithFirstRun, dbget.WithLastRun.
+
+        Entity generation
+            (?) I'm not sure if they mean entities being generated, or a certain generation in a population. 
+            Another comment in the code says: As it is today model run has only one entity generation for each entity.
+            So this is some kind of future proofing thing?
+            db.GetEntityGenList is a function that's related to this.
+
+
+Some background on model output expressions:
+    There are three kinds of output tables:
+        Accumulator table
+            Model run results are collected in accumulator tables and are written into output accumulator tables.
+            I think accumulator tables store results collected from individual sub-values
+        Output accumulator table
+            These ones aggregate results in accumulator tables across sub-values.
+            Actually this is contradicted by other parts of the wiki, so not sure.
+
+        Expression table
+            These aggregate results from output accumulator tables across dimension attributes according to GroupBy clauses.
+
+
+Info from OpenM wiki related to dbget.Calc and dbget.GroupBy options
+    Operation reads a page of aggregated microdata values from model run.
+    
+    GroupBy option needs to be applied on so called dimension attributes which are of enumeration or boolean type.
+
+    Aggregations of various specified kinds are then performed on attributes of floating point or integer type, on each group specified by the GroupBy option.
+    Parameter values of floating point or integer type can also be used in expressions, for example for condition testing in expressions like OM_COUNT_IF.
+
+These are the aggregation functions that are available:
+    OM_AVG      : Arithmetic mean of accumulator sub-values
+    OM_SUM      : Sum of accumulator sub-values (how does that make sense?)
+    OM_COUNT    : Count 
+    OM_COUNT_IF : Count of values matching condition
+    OM_MAX      : Maximum from accumulator sub-values
+    OM_MIN      : Minimum
+    OM_VAR      : Variance across accumulator sub-values
+    OM_SD       : Standard deviation
+    OM_SE       : Standard error
+    OM_CV       : Coefficient of variation
