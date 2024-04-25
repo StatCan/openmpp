@@ -1,0 +1,19 @@
+0  0x0000000000a7b5ce in os/exec.(*Cmd).Start
+   at /usr/local/go/src/os/exec/exec.go:628
+1  0x0000000000b91bd7 in main.(*RunCatalog).runModel
+   at ./runModel.go:592
+2  0x0000000000b261af in main.runModelHandler
+   at ./handlerRunModel.go:98
+3  0x00000000008b18b0 in github.com/husobee/vestigo.glob..func6.1
+   at /home/jacek/go/pkg/mod/github.com/husobee/vestigo@v1.1.1/handlers.go:160
+4  0x00000000008b2d93 in github.com/husobee/vestigo.(*Router).ServeHTTP
+   at /home/jacek/go/pkg/mod/github.com/husobee/vestigo@v1.1.1/router.go:67
+5  0x0000000000891257 in net/http.serverHandler.ServeHTTP
+   at /usr/local/go/src/net/http/server.go:2938
+6  0x000000000088b519 in net/http.(*conn).serve
+   at /usr/local/go/src/net/http/server.go:2009
+7  0x000000000089203c in net/http.(*Server).Serve.func3
+   at /usr/local/go/src/net/http/server.go:3086
+8  0x0000000000478261 in runtime.goexit
+   at /usr/local/go/src/runtime/asm_amd64.s:1650
+

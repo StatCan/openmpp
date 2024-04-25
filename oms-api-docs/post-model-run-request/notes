@@ -22,4 +22,6 @@ Source code file:
 Key objects and functions:
     main.RunCatalog
     main.(*RunCatalog).runModel
-
+    main.makeCommand
+    os/exec.Command
+    os/exec.Cmd
