@@ -1,0 +1,189 @@
+ These are about 100 methods offered for getting parameter, table, and microdata values from a model database through the openm web service api.
+
+There is one set of methods implemented using POST requests, with some request arguments provided as part of the url, while some are provided in json format as POST request body.
+
+There is another set of methods that provides the same functionality, but these are implemented as GET methods, with some of the requested parameters included in the urls. I think these methods use some reasonable default values for parameters not included in the urls.
+ 
+For each operation there is also an option to have dimensions and enumeration based parameters (or table or microdata values returned as enumeration codes or as enumeration ids.
+
+So each operation has several methods that do the same thing with minor variations. Will include a list of all of them below for completeness. But we will be picking 3 or so to step through the code and note key functions and data structures.
+
+Read parameter values from workset (workset is scenario)
+    POST /api/model/:model/workset/:set/parameter/value
+
+Read parameter values from workset (enum id's)
+    POST /api/model/:model/workset/:set/parameter/value-id
+
+Read parameter values from model run
+    POST /api/model/:model/run/:run/parameter/value
+
+Read parameter values from model run (enum id's)
+    POST /api/model/:model/run/:run/parameter/value-id
+
+Read output table values from model run
+    POST /api/model/:model/run/:run/table/value
+
+Read output table values from model run (enum id's)
+    POST /api/model/:model/run/:run/table/value-id
+
+Read output table calculated values from model run
+    POST /api/model/:model/run/:run/table/calc
+
+Read output table calculated values from model run (enum id's)
+    POST /api/model/:model/run/:run/table/calc-id
+
+Read output table values and compare model runs
+    POST /api/model/:model/run/:run/table/compare
+
+Read output table values and compare model runs (enun id's)
+    POST /api/model/:model/run/:run/table/compare-id
+
+Read microdata values from model run
+    POST /api/model/:model/run/:run/microdata/value
+
+Read microdata values from model run (enum id's)
+    POST /api/model/:model/run/:run/microdata/value-id
+
+Read aggregated microdata from model run
+    POST /api/model/:model/run/:run/microdata/calc
+
+Read aggregated microdata from model run (enum id's)
+    POST /api/model/:model/run/:run/microdata/calc-id
+
+Read microdata run comparison
+    POST /api/model/:model/run/:run/microdata/compare
+
+Read microdata run comparison (enum id's)
+    POST /api/model/:model/run/:run/microdata/compare-id
+
+
+GET parameter values from workset
+    GET /api/model/:model/workset/:set/parameter/:name/value
+    GET /api/model/:model/workset/:set/parameter/:name/value/start/:start
+    GET /api/model/:model/workset/:set/parameter/:name/value/start/:start/count/:count
+
+GET parameter values from model run
+    GET /api/model/:model/run/:run/parameter/:name/value
+    GET /api/model/:model/run/:run/parameter/:name/value/start/:start
+    GET /api/model/:model/run/:run/parameter/:name/value/start/:start/count/:count
+
+GET output table expression(s) from model run
+    GET /api/model/:model/run/:run/table/:name/expr
+    GET /api/model/:model/run/:run/table/:name/expr/start/:start
+    GET /api/model/:model/run/:run/table/:name/expr/start/:start/count/:count
+
+GET output table calculated expression(s) from model run
+    GET /api/model/:model/run/:run/table/:name/calc/:calc
+    GET /api/model/:model/run/:run/table/:name/calc/:calc/start/:start
+    GET /api/model/:model/run/:run/table/:name/calc/:calc/start/:start/count/:count
+
+GET output table values and compare model runs
+    GET /api/model/:model/run/:run/table/:name/compare/:compare/variant/:variant
+    GET /api/model/:model/run/:run/table/:name/compare/:compare/variant/:variant/start/:start
+    GET /api/model/:model/run/:run/table/:name/compare/:compare/variant/:variant/start/:start/count/:count
+
+GET output table accumulator(s) from model run
+    GET /api/model/:model/run/:run/table/:name/acc
+    GET /api/model/:model/run/:run/table/:name/acc/start/:start
+    GET /api/model/:model/run/:run/table/:name/acc/start/:start/count/:count
+
+GET output table all accumulators from model run
+    GET /api/model/:model/run/:run/table/:name/all-acc
+    GET /api/model/:model/run/:run/table/:name/all-acc/start/:start
+    GET /api/model/:model/run/:run/table/:name/all-acc/start/:start/count/:count
+
+GET microdata values from model run
+    GET /api/model/:model/run/:run/microdata/:name/value
+    GET /api/model/:model/run/:run/microdata/:name/value/start/:start
+    GET /api/model/:model/run/:run/microdata/:name/value/start/:start/count/:count
+
+GET aggregated microdata from model run
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/calc/:calc
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/calc/:calc/start/:start
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/calc/:calc/start/:start/count/:count
+
+GET microdata run comparison
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/compare/:compare/variant/:variant
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/compare/:compare/variant/:variant/start/:start
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/compare/:compare/variant/:variant/start/:start/count/:count
+
+GET csv parameter values from workset
+    GET /api/model/:model/workset/:set/parameter/:name/csv
+    GET /api/model/:model/workset/:set/parameter/:name/csv-bom
+
+GET csv parameter values from workset (enum id's)
+    GET /api/model/:model/workset/:set/parameter/:name/csv-id
+    GET /api/model/:model/workset/:set/parameter/:name/csv-id-bom
+
+GET csv parameter values from model run
+    GET /api/model/:model/run/:run/parameter/:name/csv
+    GET /api/model/:model/run/:run/parameter/:name/csv-bom
+
+GET csv parameter values from model run (enum id's)
+    GET /api/model/:model/run/:run/parameter/:name/csv-id
+    GET /api/model/:model/run/:run/parameter/:name/csv-id-bom
+
+GET csv output table expressions from model run
+    GET /api/model/:model/run/:run/table/:name/expr/csv
+    GET /api/model/:model/run/:run/table/:name/expr/csv-bom
+
+GET csv output table expressions from model run (enum id's)
+    GET /api/model/:model/run/:run/table/:name/expr/csv-id
+    GET /api/model/:model/run/:run/table/:name/expr/csv-id-bom
+
+GET csv calculated table expressions from model run
+    GET /api/model/:model/run/:run/table/:name/calc/:calc/csv
+    GET /api/model/:model/run/:run/table/:name/calc/:calc/csv-bom
+
+GET csv calculated table expressions from model run (enum id's)
+    GET /api/model/:model/run/:run/table/:name/calc/:calc/csv-id
+    GET /api/model/:model/run/:run/table/:name/calc/:calc/csv-id-bom
+
+GET csv model runs comparison table expressions
+    GET /api/model/:model/run/:run/table/:name/compare/:compare/variant/:variant/csv
+    GET /api/model/:model/run/:run/table/:name/compare/:compare/variant/:variant/csv-bom
+
+GET csv model runs comparison table expressions (enum id's)
+    GET /api/model/:model/run/:run/table/:name/compare/:compare/variant/:variant/csv-id
+    GET /api/model/:model/run/:run/table/:name/compare/:compare/variant/:variant/csv-id-bom
+
+GET csv output table accumulators from model run
+    GET /api/model/:model/run/:run/table/:name/acc/csv
+    GET /api/model/:model/run/:run/table/:name/acc/csv-bom
+
+GET csv output table accumulators from model run (enum id's)
+    GET /api/model/:model/run/:run/table/:name/acc/csv-id
+    GET /api/model/:model/run/:run/table/:name/acc/csv-id-bom
+
+GET csv output table all accumulators from model run
+    GET /api/model/:model/run/:run/table/:name/all-acc/csv
+    GET /api/model/:model/run/:run/table/:name/all-acc/csv-bom
+
+GET csv output table all accumulators from model run (enum id's)
+    GET /api/model/:model/run/:run/table/:name/all-acc/csv-id
+    GET /api/model/:model/run/:run/table/:name/all-acc/csv-id-bom
+
+GET csv microdata values from model run
+    GET /api/model/:model/run/:run/microdata/:name/csv
+    GET /api/model/:model/run/:run/microdata/:name/csv-bom
+
+GET csv microdata values from model run (enum id's)
+    GET /api/model/:model/run/:run/microdata/:name/csv-id
+    GET /api/model/:model/run/:run/microdata/:name/csv-id-bom
+
+GET csv aggregated microdata from model run
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/calc/:calc/csv
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/calc/:calc/csv-bom
+
+GET csv aggregated microdata from model run (enum id's)
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/calc/:calc/csv-id
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/calc/:calc/csv-id-bom
+
+GET csv microdata run comparison
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/compare/:compare/variant/:variant/csv
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/compare/:compare/variant/:variant/csv-bom
+
+GET csv microdata run comparison (enum id's)
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/compare/:compare/variant/:variant/csv-id
+    GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/compare/:compare/variant
+
