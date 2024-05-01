@@ -1,0 +1,81 @@
+Notes:
+    Recall, to send a POST request to the oms web server with curl use the following command format:
+    
+    curl -X POST \
+    > --header "Content-Type: application/json" \
+    > --data @<file with request body in raw json format> \
+    > <domain name>/<api endpoint>
+    
+    The -X POST option specifies http request type.
+    The --data option allows for passing request body.
+    The @ symbol indicates that we're passing the request body from file.
+
+    To identify the request handlers we worked like this:
+        Start up a pre-built version of oms on localhost with the UI running.
+        Use the UI to access a model run and then access the output tables.
+        Open up the developer console and study the http requests in network tab.
+        Confirm that the expected api calls are being made to access output table values.
+
+        We would like to figure out how set breakpoints in delve that halt when a certain variable meets a certain condition. We could then, for example, test http request objects for their header and halt if it's of a certain type.
+
+        But we don't so instead we study the source code and set breakpoints on all potential request handlers.
+        That way we are more likely to trip the handler that's actually used.
+        Then we step our way through the code from there.
+
+    Question: 
+        What oms api calls are used to get the UI? 
+        Where in oms code are the handlers to dispatch the UI code to the client?
+        
+        Not sure, but I do know that all requests sent to the web service api are prefixed with api/.
+
+Command:
+    POST <domain name>/api/model/<model>/run/<run>/table/value
+    Where <model> is model name or model digest,
+    and <run> is run digest, run stamp, or run name, or task run stamp, or task run name.
+    
+    Example:
+    POST localhost:5050/api/model/d90e1e9a49a06d972ecf1d50e684c62b/run/1ab1f3f6365d48130328f89d6fcda7c6/table/value-id
+
+Request handler:
+    main.runTablePageReadHandler
+
+Source code file:
+    go/oms/handlerRead.go
+
+Key functions and data structures:
+    main.runTablePageReadHandler
+        main.doReadTablePageHandler
+            main.getRequestParam
+            db.ReadTableLayout
+            jsonRequestDecode
+            jsonCellWriter
+                Writes each row of data page into response as a list of comma seperated values.
+            (*ModelCatalog).ReadOutTableTo
+                db.ReadOutputTableTo
+                    ReadOutputTableTo reads output table page (both dimensions and values) from model run results and processes each row using cvtTo
+                    db.GetRun
+                    db.GetFirstRun
+                        Returns first run of the model.
+                    db.GetRunRow
+                        That one seems to be the one with the actual SQL query for data rows.
+
+ReadTableLayout
+    ReadLayout
+        Is a struct type that describes the database source from which to read data.
+        Name 
+            Parameter name, output table name, or entity microdata name
+            In the case of a table read request it is the table name.
+        FromId
+            Run id or workset id
+        ReadPageLayout
+            Embedded structure that has additional fields related to pagination. 
+        Filter
+            dimension or attribute filters
+        FilterById 
+            dimension or attribute filters that use enumeration ids
+        OrderBy 
+            list of columns by which to order the results 
+
+
+theCatalog
+    

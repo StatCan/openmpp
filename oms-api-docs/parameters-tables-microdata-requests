@@ -187,3 +187,12 @@ GET csv microdata run comparison (enum id's)
     GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/compare/:compare/variant/:variant/csv-id
     GET /api/model/:model/run/:run/microdata/:name/group-by/:group-by/compare/:compare/variant
 
+
+Key functions and data structures related to reading parameters, table values, microdata:
+    doReadParameterPageHandler
+        db.ReadParamLayout
+
+    doTableGetPageHandler
+
+    runTableCalcPageGetHandler
+                                    
