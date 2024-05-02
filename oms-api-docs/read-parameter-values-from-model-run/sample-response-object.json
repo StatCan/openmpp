@@ -1,0 +1,16 @@
+{
+  "Page": [
+    {
+      "DimIds": [],
+      "IsNull": false,
+      "Value": 5000,
+      "SubId": 0
+    }
+  ],
+  "Layout": {
+    "Offset": 0,
+    "Size": 1,
+    "IsLastPage": true,
+    "IsFullPage": false
+  }
+}

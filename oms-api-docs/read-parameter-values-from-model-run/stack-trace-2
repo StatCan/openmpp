@@ -1,0 +1,25 @@
+0  0x0000000000a2a796 in github.com/openmpp/go/ompp/db.ReadParameterTo.func3
+    at /home/jacek/Projects/OpenM++/go/ompp/db/readParameter.go:250
+ 1  0x00000000009cf6f6 in github.com/openmpp/go/ompp/db.SelectRowsTo
+    at /home/jacek/Projects/OpenM++/go/ompp/db/db.go:279
+ 2  0x0000000000a29a45 in github.com/openmpp/go/ompp/db.ReadParameterTo
+    at /home/jacek/Projects/OpenM++/go/ompp/db/readParameter.go:249
+ 3  0x0000000000b59cbe in main.(*ModelCatalog).ReadParameterTo
+    at ./readValue.go:69
+ 4  0x0000000000b15196 in main.doReadParameterPageHandler
+    at ./handlerRead.go:83
+ 5  0x0000000000b14d9e in main.runParameterIdPageReadHandler
+    at ./handlerRead.go:41
+ 6  0x00000000008b18b0 in github.com/husobee/vestigo.glob..func6.1
+    at /home/jacek/go/pkg/mod/github.com/husobee/vestigo@v1.1.1/handlers.go:160
+ 7  0x00000000008b2d93 in github.com/husobee/vestigo.(*Router).ServeHTTP
+    at /home/jacek/go/pkg/mod/github.com/husobee/vestigo@v1.1.1/router.go:67
+ 8  0x0000000000891257 in net/http.serverHandler.ServeHTTP
+    at /usr/local/go/src/net/http/server.go:2938
+ 9  0x000000000088b519 in net/http.(*conn).serve
+    at /usr/local/go/src/net/http/server.go:2009
+10  0x000000000089203c in net/http.(*Server).Serve.func3
+    at /usr/local/go/src/net/http/server.go:3086
+11  0x0000000000478261 in runtime.goexit
+    at /usr/local/go/src/runtime/asm_amd64.s:1650
+

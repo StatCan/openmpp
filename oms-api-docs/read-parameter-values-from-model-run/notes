@@ -1,0 +1,61 @@
+Notes:
+    Recall, to send a POST request to the oms web server with curl use the following command format:
+    
+    curl -X POST \
+    > --header "Content-Type: application/json" \
+    > --data @<file with request body in raw json format> \
+    > <domain name>/<api endpoint>
+    
+    The -X POST option specifies http request type.
+    The --data option allows for passing request body.
+    The @ symbol indicates that we're passing the request body from file.
+
+Command:
+    POST <domain name>/api/model/<model>/run/<run>/parameter/value
+    Where <model> is model name or model digest,
+    and <run> is run digest, run stamp, or run name, or task run stamp, or task run name.
+
+    Example:
+    POST localhost:5050/api/model/d90e1e9a49a06d972ecf1d50e684c62b/run/1ab1f3f6365d48130328f89d6fcda7c6/parameter/value-id
+
+Request handler:
+    main.runRunParameterIdPageReadHandler
+
+Source code file:
+    go/oms/handlerRead.go
+
+Key functions and data structures:
+    main.runParameterIdPageReadHandler
+        doReadParameterPageHandler
+            Reads parameter data from runs or scenarios.
+            Works with dimension and enumeration ids and codes.
+            
+            getRequestParameter
+                Extracts values from json request.
+            
+            jsonRequestDecode
+                Decodes json request body into an appropriate struct type for a read parameter request.
+            
+            (*ModelCatalog).ReadParameterTo 
+                Selects a page of parameter values from workset or model run and passes each row into a converter function cvtWr.
+                Gets model metadata and database connection.
+                Checks if parameter exists in model.
+                Finds appropriate scenario or run id.
+                Returns a pointer to a filled out db.ReadPageLayout structure.
+                db.ReadParameterTo
+
+db.ReadParameterTo
+    Reads input rows describing parameters (subvalue id, dimensions, value) from workset or model run results, and processes them into an appropriate data structure using the helper function argument cvtTo.
+    scanSqlRowToCellParam
+        Prepares a database row scan conversion buffer.
+
+    db.SelectRowsTo
+        Selects db rows specified by query string, processes them using helper function cvt provided as argument.
+    
+    db.SelectToList
+        Selects rows specified by query string, processes them according to a helper function provided as argument, the processed rows get placed into a List structure that was also passed as argument.
+
+Note: They use anonymous function definitions and closures when defining the helper row converter functions.
+
+ModelCatalog
+    Is a data structure that holds a list of models and database connections that are available to the web service.
