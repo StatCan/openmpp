@@ -1,0 +1,23 @@
+Some initial notes about the ini file parsing:
+    loadini function parses ini file content into a map[string]string and returns the map
+    ini file content is provided as a string argument
+    Concatenation of section and key into section.key is used as the map key 
+    comments are ignored
+    
+    strings.IndexAny(s, chars string) int
+        Checks if any of the characters in chars are contained in s.
+        If there are, it returns the index of the first such character in s.
+        Otherwise it returns -1.
+
+    nextPos := The index of the next line termination character in iniContent
+    nStart := Index of the character in the input string that marks where the current line ends.
+    line := 
+        A slice containing the next line of configuration input.
+        Currently it splits on encountering line termination characters.
+        We'll have to make changes at this level because the line to be parsed needs to retain value information from multiple lines.
+
+    strings.TrimSpace(
+
+    The parser looks for line termination characters first.
+    It then selects a substring of the input string that corresponds to one line in the config file.
+ 
