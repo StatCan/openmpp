@@ -16,8 +16,82 @@ Some initial notes about the ini file parsing:
         Currently it splits on encountering line termination characters.
         We'll have to make changes at this level because the line to be parsed needs to retain value information from multiple lines.
 
-    strings.TrimSpace(
+    func TrimSpace(s string) string
+        Returns a substring with all leading and trailing whitespace from the input string removed.
 
     The parser looks for line termination characters first.
     It then selects a substring of the input string that corresponds to one line in the config file.
- 
+
+    This:
+    <prefix> / <ignore> <first occurence of line termination character> <suffix>
+    becomes this:
+    <prefix> <suffix>
+
+Notes from emails regarding dbget:
+
+It may be easier to start with model metadata output.
+Then move on to getting actual parameters data, output tables data, microdata.
+
+Provided some example commands that we could try to implement:
+    dbget -m modelOne -do model-all -dir my/output/dir
+        Get all model metadata?
+        Specify model name.
+        Specify dbget action: get all model metadata?
+        Specify output directory.
+
+    dbget -m modelOne -do model-dic
+        Get model metadata dictionary.
+
+    dbget -m modelOne -do model-parameters
+        This one seems clear: Get list of model parameters.
+
+    dbget -m modelOne -do model-parameter -name StartingSeed
+        This one seems clear also: Get information about specified model parameter.
+
+And these functions or similar are supposedly already implemented:   
+    model-list (in dbget package?)
+    Using existing object relational mapping functions (in dbcopy?)
+
+Dbget should produce output similar to dbcopy and oms.
+The main new idea is that it should be language specific (internationalized?).
+
+Suggested that we run these commands and examine the output produced.
+    dbget -m modelOne -do model-list [-dbget.ToConsole]
+    dbget -m modelOne -do model-list -tsv 
+    dbget -m modelOne -do model-list -json 
+    dbget -m modelOne -do model-list -lang EN 
+    dbget -m modelOne -do model-list -dbget.Notes -lang en-CA
+
+Suggested that next task can be to implement parameter-list metadata:
+Suggested command examples:
+    dbget -m modelone -do parameter-list
+    dbget -m modelOne -do parameter-list -tsv
+    dbget -m modelOne -do parameter-list -json
+
+    dbget -m modelOne -do parameter-list -lang EN
+    dbget -m modelOne -do parameter-list -lang fr-CA
+    dbget -m modelOne -do parameter-list -dbget.Notes -lang en-CA
+
+In follow-up work implement single parameter requests with something like this:
+    dbget -m ModelOne -do parameter-meta ageSex
+
+Which should produce output files of this sort:
+    parameter-meta.ageSex.csv
+    parameter-meta-dims.ageSex.csv
+    parameter-meta-import.ageSex.csv
+
+Develop similar operations (lists and specific instances) for all these things:
+    model metadata
+    parameters 
+    model tables
+    entities
+    type definitions
+    accumulators and microdata
+
+Steve is suggesting that functionality get rolled into the main dev branch as it's completed, but not adverstising added functionality to users until things are in some stable state.
+
+Suggested another type of operation to implement:
+    dbget -m modelOne -do parameter -dbget.Run Default -dbget.Parameter ageSex
+    dbget -m modelone -do parameter -dbget.Set Default -dbget.Parameter ageSex
+    
+    So enable getting parameter info from either a specified model run or a model scenario.
